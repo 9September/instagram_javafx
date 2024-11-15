@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.image.Image?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yd.controller.LoginController"
+      alignment="CENTER" spacing="20"
+      stylesheets="@/styles/styles.css"
+      prefWidth="400" prefHeight="600"
+      styleClass="light-theme">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <ImageView fx:id="logoImageView" fitWidth="200" preserveRatio="true">
+        <image>
+            <Image url="@/images/instagram_logo.png"/>
+        </image>
+    </ImageView>
+
+
+    <VBox alignment="CENTER" spacing="15">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <TextField fx:id="idField" promptText="전화번호, 사용자 이름 또는 이메일" styleClass="text-field-small"/>
+        <PasswordField fx:id="passwordField" promptText="비밀번호" styleClass="password-field-small"/>
+        <Button text="로그인" onAction="#handleLogin" styleClass="login-primary-button"/>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Separator orientation="HORIZONTAL" prefWidth="100"/>
+        <Label text="또는" />
+        <Separator orientation="HORIZONTAL" prefWidth="100"/>
+    </HBox>
+
+    <!-- <Hyperlink text="비밀번호를 잊으셨나요?" onAction="#handleForgotPassword"/> -->
+
+    <Label text="계정이 없으신가요?" />
+    <Hyperlink text="가입하기" onAction="#goToRegister"/>
+
+    <Label fx:id="messageLabel" textFill="red"/>
+</VBox>

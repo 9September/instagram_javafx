@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ListView?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yd.controller.SearchController"
+      spacing="10">
+    <Label text="검색" styleClass="section-title"/>
+    <TextField fx:id="searchField" promptText="검색어 입력" />
+    <ListView fx:id="searchResultListView" />
+</VBox>
+

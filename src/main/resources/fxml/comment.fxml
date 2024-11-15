@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:controller="com.yd.controller.PostController"
+      xmlns:fx="http://javafx.com/fxml" spacing="10" styleClass="dark-theme">
+    <Label fx:id="postLabel" wrapText="true" styleClass="username-label"/>
+    <ListView fx:id="commentListView" prefHeight="200"/>
+    <HBox spacing="10">
+        <TextField fx:id="commentField" promptText="댓글 작성하기" HBox.hgrow="ALWAYS" styleClass="text-field-small"/>
+        <Button fx:id="addCommentButton" text="추가" onAction="#handleAddComment" styleClass="primary-button"/>
+    </HBox>
+</VBox>

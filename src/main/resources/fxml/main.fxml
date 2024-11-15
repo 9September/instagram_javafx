@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.yd.controller.MainController"
+            fx:id="mainBorderPane"
+            stylesheets="@/styles/styles.css"
+            styleClass="dark-theme"> <!-- dark-theme 클래스 추가 -->
+
+    <!-- 왼쪽 사이드바 -->
+    <left>
+        <VBox spacing="15" styleClass="sidebar">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
+            </padding>
+            <ImageView fx:id="logoImageView" fitWidth="200" preserveRatio="true">
+                <image>
+                    <Image url="@/images/instagram_logo2.png"/>
+                </image>
+            </ImageView>
+
+            <VBox spacing="10">
+                <!-- 홈 버튼 -->
+                <Button onAction="#goToHome" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/home.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>홈</text>
+                </Button>
+
+                <!-- 검색 버튼 -->
+                <Button onAction="#goToSearch" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/search.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>검색</text>
+                </Button>
+
+                <!-- 탐색 버튼 -->
+                <Button onAction="#goToExplore" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/explore.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>탐색</text>
+                </Button>
+
+                <!-- 릴스 버튼 -->
+                <Button onAction="#goToReels" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/reels.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>릴스</text>
+                </Button>
+
+                <!-- 메시지 버튼 -->
+                <Button onAction="#goToMessages" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/messages.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>메시지</text>
+                </Button>
+
+                <!-- 알림 버튼 -->
+                <Button onAction="#goToNotifications" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/notifications.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>알림</text>
+                </Button>
+
+                <!-- 게시물 버튼 -->
+                <Button onAction="#goToPosts" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <image>
+                                <Image url="@/images/icons/posts.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <text>게시물</text>
+                </Button>
+
+                <!-- 프로필 버튼 -->
+                <Button onAction="#goToProfile" styleClass="sidebar-button">
+                    <graphic>
+                        <ImageView fx:id="profileImageView" fitWidth="24" fitHeight="24"/>
+                    </graphic>
+                    <text>프로필</text>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- 중앙 컨텐츠 영역 -->
+    <center>
+        <VBox spacing="10" styleClass="feed-container">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
+            </padding>
+
+            <!-- 포스트 리스트 -->
+            <ListView fx:id="postListView" prefHeight="720" styleClass="list-view"/>
+        </VBox>
+    </center>
+
+    <!-- 오른쪽 사이드바 -->
+    <right>
+        <VBox spacing="10" styleClass="sidebar">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
+            </padding>
+            <!-- Following List -->
+            <Label text="팔로잉 목록" styleClass="section-title"/>
+            <ListView fx:id="followingListView" prefHeight="200" styleClass="list-view"/>
+
+            <!-- Follow Recommendations -->
+            <Label text="팔로우 추천 목록" styleClass="section-title"/>
+            <ListView fx:id="recommendListView" onMouseClicked="#handleFollowRecommendUser" prefHeight="200" styleClass="list-view"/>
+        </VBox>
+    </right>
+</BorderPane>

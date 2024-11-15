@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.TilePane?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yd.controller.ExploreController"
+      spacing="10"
+      alignment="CENTER"
+      stylesheets="@/styles/styles.css"
+      styleClass="explore-container">
+
+    <!-- 섹션 제목 -->
+    <Label text="탐색" styleClass="section-title"/>
+
+    <!-- 탐색 콘텐츠 영역 -->
+    <ScrollPane fitToWidth="true">
+        <TilePane fx:id="exploreTilePane"
+                  hgap="10"
+                  vgap="10"
+                  prefColumns="3"
+                  alignment="CENTER"
+                  styleClass="explore-tile-pane">
+            <!-- 이미지들이 동적으로 추가될 예정 -->
+        </TilePane>
+    </ScrollPane>
+
+</VBox>

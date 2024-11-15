@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.image.Image?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yd.controller.RegisterController"
+      alignment="CENTER" spacing="20"
+      stylesheets="@/styles/styles.css"
+      prefWidth="400" prefHeight="700"
+      styleClass="light-theme">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <ImageView fx:id="logoImageView" fitWidth="150" preserveRatio="true">
+        <image>
+            <Image url="@/images/instagram_logo.png"/>
+        </image>
+    </ImageView>
+
+    <VBox spacing="10" alignment="CENTER">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <TextField fx:id="idField" promptText="전화번호, 사용자 이름 또는 이메일" styleClass="text-field-small"/>
+        <PasswordField fx:id="passwordField" promptText="비밀번호" styleClass="password-field-small"/>
+        <TextField fx:id="emailField" promptText="이메일" styleClass="text-field-small"/>
+        <DatePicker fx:id="birthdayPicker" promptText="생일" styleClass="text-field-small"/>
+        <TextField fx:id="phoneField" promptText="전화번호" styleClass="text-field-small"/>
+    </VBox>
+
+    <Button text="가입" onAction="#handleRegister" styleClass="login-primary-button"/>
+
+    <Label text="계정이 있으신가요?" />
+    <Hyperlink text="로그인" onAction="#goToLogin"/>
+
+    <Label fx:id="messageLabel" textFill="red"/>
+</VBox>

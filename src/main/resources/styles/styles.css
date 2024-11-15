@@ -1,0 +1,364 @@
+/* styles.css */
+
+/* General Styles */
+
+/* Overall layout */
+.sidebar {
+    -fx-border-width: 0 1 0 0;
+    -fx-border-color: #dbdbdb;
+}
+
+.feed-container {
+    -fx-padding: 10; /* 컨테이너 내부 여백 추가 */
+    -fx-spacing: 10; /* 포스트 간 간격 추가 */
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.topbar {
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #dbdbdb;
+}
+
+.search-field {
+    -fx-background-radius: 5;
+    -fx-padding: 5 10 5 10;
+    -fx-font-size: 14px;
+}
+
+.username-label {
+    -fx-font-weight: bold;
+}
+
+.user-name-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.post-item {
+    -fx-border-width: 1;
+    -fx-border-color: #dbdbdb;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 10; /* 여백 추가 */
+    -fx-spacing: 10; /* 내부 요소 간의 간격 추가 */
+    -fx-background-color: #ffffff; /* 배경색 지정 */
+}
+
+.username {
+    -fx-font-weight: bold;
+}
+
+.timestamp {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8e8e8e;
+}
+
+.post-content {
+    -fx-font-size: 14px;
+    -fx-wrap-text: true; /* 텍스트 줄바꿈 허용 */
+}
+
+.post-image {
+    -fx-fit-width: true;
+    -fx-preserve-ratio: true;
+}
+
+/* 유저네임과 포스트 내용 스타일 */
+.username-label,
+.username,
+.post-content {
+    -fx-text-fill: #262626; /* 텍스트 색상 명시화 */
+}
+
+.button {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+    -fx-text-fill: #3897f0;
+}
+
+.list-view {
+    -fx-background-color: #2b2b2b;
+}
+
+.list-view .placeholder {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: white;
+}
+
+.list-cell {
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+}
+
+.list-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.profile-image {
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+/* 일반 버튼 스타일 */
+.primary-button {
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.secondary-button {
+    -fx-border-width: 1;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+/* 로그인 및 회원가입 버튼 스타일 */
+.login-primary-button {
+    -fx-font-weight: bold;
+    -fx-pref-width: 330px;
+    -fx-pref-height: 40px;
+    -fx-background-radius: 5;
+}
+
+.login-secondary-button {
+    -fx-border-width: 1;
+    -fx-font-weight: bold;
+    -fx-pref-width: 330px;
+    -fx-pref-height: 40px;
+    -fx-background-radius: 5;
+}
+
+/* Input Field Sizes */
+.text-field-small {
+    -fx-pref-width: 330px;
+    -fx-pref-height: 40px;
+    -fx-font-size: 14px;
+}
+
+.password-field-small {
+    -fx-pref-width: 330px;
+    -fx-pref-height: 40px;
+    -fx-font-size: 14px;
+}
+
+/* Sidebar Button Styles */
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-padding: 10 15 10 15;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.sidebar-button:hover {
+    -fx-font-weight: bold;
+}
+
+/* Light Theme Styles */
+
+.light-theme {
+    -fx-background-color: #ffffff;
+}
+
+.light-theme .sidebar {
+    -fx-background-color: #ffffff;
+}
+
+.light-theme .feed-container {
+    -fx-background-color: #fafafa;
+}
+
+.light-theme .section-title,
+.light-theme .username-label,
+.light-theme .username,
+.light-theme .post-content {
+    -fx-text-fill: #262626;
+}
+
+.light-theme .timestamp {
+    -fx-text-fill: #8e8e8e;
+}
+
+.light-theme .post-item {
+    -fx-background-color: #ffffff;
+}
+
+.light-theme .button:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.light-theme .sidebar-button {
+    -fx-text-fill: #262626;
+}
+
+.light-theme .sidebar-button:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #3897f0;
+}
+
+.light-theme .primary-button {
+    -fx-background-color: #3897f0;
+    -fx-text-fill: white;
+}
+
+.light-theme .primary-button:hover {
+    -fx-background-color: #2c7cd1;
+}
+
+.light-theme .secondary-button {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dbdbdb;
+    -fx-text-fill: #3897f0;
+}
+
+.light-theme .secondary-button:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.light-theme .login-primary-button {
+    -fx-background-color: #3897f0;
+    -fx-text-fill: white;
+}
+
+.light-theme .login-primary-button:hover {
+    -fx-background-color: #2c7cd1;
+}
+
+.light-theme .login-secondary-button {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dbdbdb;
+    -fx-text-fill: #3897f0;
+}
+
+.light-theme .login-secondary-button:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+.light-theme .search-field {
+    -fx-background-color: #efefef;
+    -fx-prompt-text-fill: #8e8e8e;
+    -fx-text-fill: #262626;
+}
+
+.light-theme .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #262626;
+}
+
+/* Dark Theme Styles */
+
+.dark-theme {
+    -fx-background-color: #1e1e1e;
+}
+
+.dark-theme .sidebar {
+    -fx-background-color: #000000;
+}
+
+.dark-theme .feed-container {
+    -fx-background-color: #1e1e1e;
+}
+
+.dark-theme .section-title,
+.dark-theme .username-label,
+.dark-theme .username,
+.dark-theme .post-content {
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .timestamp {
+    -fx-text-fill: #aaaaaa;
+}
+
+.dark-theme .button:hover {
+    -fx-background-color: #3a3a3a;
+}
+
+.dark-theme .sidebar-button {
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .sidebar-button:hover {
+    -fx-background-color: #3a3a3a;
+    -fx-text-fill: #3897f0;
+}
+
+.dark-theme .post-item {
+    -fx-background-color: #2c2c2c;
+}
+
+.dark-theme .primary-button {
+    -fx-background-color: #3897f0;
+    -fx-text-fill: white;
+}
+
+.dark-theme .primary-button:hover {
+    -fx-background-color: #2c7cd1;
+}
+
+.dark-theme .secondary-button {
+    -fx-background-color: #2c2c2c;
+    -fx-border-color: #dbdbdb;
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .secondary-button:hover {
+    -fx-background-color: #3a3a3a;
+}
+
+.dark-theme .login-primary-button {
+    -fx-background-color: #3897f0;
+    -fx-text-fill: white;
+}
+
+.dark-theme .login-primary-button:hover {
+    -fx-background-color: #2c7cd1;
+}
+
+.dark-theme .login-secondary-button {
+    -fx-background-color: #2c2c2c;
+    -fx-border-color: #dbdbdb;
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .login-secondary-button:hover {
+    -fx-background-color: #3a3a3a;
+}
+
+.dark-theme .search-field {
+    -fx-background-color: #3a3a3a;
+    -fx-prompt-text-fill: #aaaaaa;
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .list-cell {
+    -fx-background-color: #2c2c2c;
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .list-cell:selected {
+    -fx-background-color: #3a3a3a;
+}
+
+/* 탐색 화면 스타일 */
+.explore-container {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+}
+
+.explore-tile-pane {
+    -fx-background-color: transparent;
+}
+
+.explore-tile-pane .image-view {
+    -fx-cursor: hand;
+}
+
+.explore-tile-pane .image-view:hover {
+    -fx-opacity: 0.8;
+}

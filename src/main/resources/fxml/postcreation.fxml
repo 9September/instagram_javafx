@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yd.controller.PostController"
+      spacing="10">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
+    </padding>
+    <!-- 포스트 작성 영역을 별도로 분리 -->
+    <Label text="포스트 작성" styleClass="username-label"/>
+    <HBox spacing="10">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <TextArea fx:id="postTextArea" promptText="What's happening?" HBox.hgrow="ALWAYS" styleClass="text-field-small"/>
+            <ImageView fx:id="attachedImageView" fitWidth="100" fitHeight="50" preserveRatio="true" visible="false"/>
+        </VBox>
+    </HBox>
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="attachImageButton" text="이미지 첨부" onAction="#handleAttachImage" styleClass="secondary-button"/>
+        <Button text="게시" onAction="#handlePost" styleClass="primary-button"/>
+    </HBox>
+</VBox>
