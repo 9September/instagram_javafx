@@ -5,197 +5,77 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.Image?>
 
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.yd.controller.MyPageController"
+            fx:id="rootPane"
             stylesheets="@/styles/styles.css"
             styleClass="dark-theme">
 
-    <left>
-        <VBox spacing="15" styleClass="sidebar">
-            <ImageView fx:id="logoImageView" fitWidth="100" preserveRatio="true">
-                <image>
-                    <Image url="@/images/instagram_logo2.png"/>
-                </image>
-            </ImageView>
-
-            <VBox spacing="10">
-                <!-- 홈 버튼 -->
-                <Button onAction="#goToHome" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/home.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>홈</text>
-                </Button>
-
-                <!-- 검색 버튼 -->
-                <Button onAction="#goToSearch" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/search.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>검색</text>
-                </Button>
-
-                <!-- 탐색 버튼 -->
-                <Button onAction="#goToExplore" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/explore.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>탐색</text>
-                </Button>
-
-                <!-- 릴스 버튼 -->
-                <Button onAction="#goToReels" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/reels.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>릴스</text>
-                </Button>
-
-                <!-- 메시지 버튼 -->
-                <Button onAction="#goToMessages" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/messages.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>메시지</text>
-                </Button>
-
-                <!-- 알림 버튼 -->
-                <Button onAction="#goToNotifications" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/notifications.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>알림</text>
-                </Button>
-
-                <!-- 게시물 버튼 -->
-                <Button onAction="#goToPosts" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/posts.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>게시물</text>
-                </Button>
-
-                <!-- 대시보드 버튼 -->
-                <Button onAction="#goToDashboard" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/icons/dashboard.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>대시보드</text>
-                </Button>
-
-                <!-- 프로필 버튼 -->
-                <Button onAction="#goToProfile" styleClass="sidebar-button">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <image>
-                                <Image url="@/images/default_profile.jpg"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <text>프로필</text>
-                </Button>
-
-                <!-- 포스트 작성 버튼 -->
-                <Button onAction="#openPostCreation" styleClass="primary-button" prefWidth="100">
-                    <text>포스트 작성</text>
-                </Button>
-            </VBox>
-        </VBox>
-    </left>
-
-    <!-- 중앙 내용 -->
     <center>
-        <VBox spacing="20" alignment="CENTER">
-            <!-- 프로필 이미지 및 정보 -->
-            <HBox spacing="20" alignment="CENTER_LEFT">
-                <ImageView fx:id="centralProfileImageView" fitWidth="150" fitHeight="150">
-                    <image>
-                        <Image url="@/images/default_profile.jpg"/>
-                    </image>
-                </ImageView>
-                <VBox spacing="10">
-                    <Label fx:id="usernameLabel" text="사용자 이름" styleClass="username"/>
-                    <HBox spacing="20">
-                        <VBox spacing="5" alignment="CENTER">
-                            <Label text="게시물" styleClass="stat-title"/>
-                            <Label fx:id="postCountLabel" text="0" styleClass="stat-count"/>
-                        </VBox>
-                        <VBox spacing="5" alignment="CENTER">
-                            <Label text="팔로워" styleClass="stat-title"/>
-                            <Label fx:id="followerCountLabel" text="0" styleClass="stat-count"/>
-                        </VBox>
-                        <VBox spacing="5" alignment="CENTER">
-                            <Label text="팔로잉" styleClass="stat-title"/>
-                            <Label fx:id="followingCountLabel" text="0" styleClass="stat-count"/>
-                        </VBox>
+        <VBox spacing="20" alignment="TOP_CENTER">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/> <!-- 안쪽 여백 설정 -->
+            </padding>
+            <!-- 프로필 섹션 -->
+            <HBox spacing="30" alignment="CENTER_LEFT">
+                <!-- 프로필 이미지 -->
+                <ImageView fx:id="profileImageView" fitWidth="150" fitHeight="150" onMouseClicked="#handleProfileImageClick" styleClass="circular-image"/>
+
+                <!-- 사용자 정보 -->
+                <VBox spacing="10" alignment="CENTER_LEFT">
+                    <!-- 유저 아이디와 프로필 편집 버튼 -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="usernameLabel" styleClass="username-label"/>
+                        <Button text="프로필 편집" onAction="#handleEditProfile" styleClass="edit-profile-button"/>
                     </HBox>
-                    <Button text="프로필 편집" onAction="#handleEditProfile" styleClass="primary-button"/>
+
+                    <!-- 게시물 수, 팔로워 수, 팔로우 수 -->
+                    <HBox spacing="20" alignment="CENTER_LEFT">
+                        <Label text="게시글" styleClass="normal-label "/>
+                        <Label fx:id="postCountLabel" text="0" styleClass="count-label"/>
+                        <Label text="팔로워" styleClass="normal-label "/>
+                        <Label fx:id="followerCountLabel" text="0" onMouseClicked="#handleFollowerCountClick" styleClass="count-label"/>
+                        <Label text="팔로잉" styleClass="normal-label "/>
+                        <Label fx:id="followingCountLabel" text="0" onMouseClicked="#handleFollowingCountClick" styleClass="count-label"/>
+                    </HBox>
+
+                    <Label fx:id="emailLabel" prefWidth="200" textFill="white"/>
+                    <Label fx:id="birthdayLabel" prefWidth="200" textFill="white"/>
+
                 </VBox>
             </HBox>
 
             <!-- 탭 패널 -->
-            <TabPane fx:id="myTabPane" prefHeight="400" prefWidth="600">
+            <TabPane fx:id="infoTabPane" tabClosingPolicy="UNAVAILABLE" prefWidth="800">
                 <tabs>
+                    <!-- 게시물 탭 -->
                     <Tab text="게시물">
-                        <ScrollPane>
-                            <TilePane fx:id="myPostsTilePane" hgap="10" vgap="10" styleClass="dark-tile-pane">
+                        <ScrollPane fitToWidth="true" style="-fx-background: #2b2b2b;">
+                            <TilePane fx:id="postTilePane" hgap="10" vgap="10" alignment="CENTER">
                                 <!-- 게시물 이미지들 동적으로 추가 -->
                             </TilePane>
                         </ScrollPane>
                     </Tab>
-                    <Tab text="저장된">
-                        <ListView fx:id="savedPostsListView" styleClass="dark-list-view"/>
+                    <!-- 릴스 탭 -->
+                    <Tab text="릴스">
+                        <ScrollPane fitToWidth="true" style="-fx-background: #2b2b2b;">
+                            <TilePane fx:id="reelsTilePane" hgap="10" vgap="10" alignment="CENTER">
+                                <!-- 릴스 내용 동적으로 추가 -->
+                            </TilePane>
+                        </ScrollPane>
                     </Tab>
-                    <Tab text="태그된 게시물">
-                        <ListView fx:id="taggedPostsListView" styleClass="dark-list-view"/>
+                    <!-- 좋아요 탭 -->
+                    <Tab text="좋아요">
+                        <ScrollPane fitToWidth="true" style="-fx-background: #2b2b2b;">
+                            <TilePane fx:id="likesTilePane" hgap="10" vgap="10" alignment="CENTER">
+                                <!-- 좋아요한 게시물 동적으로 추가 -->
+                            </TilePane>
+                        </ScrollPane>
                     </Tab>
                 </tabs>
             </TabPane>
         </VBox>
     </center>
-
-    <right>
-        <VBox spacing="10">
-            <!-- 팔로잉 목록 -->
-            <Label text="팔로잉 목록" styleClass="section-title"/>
-            <ListView fx:id="followingListView" prefHeight="200"/>
-
-            <!-- 팔로우 추천 목록 -->
-            <Label text="팔로우 추천 목록" styleClass="section-title"/>
-            <ListView fx:id="recommendListView" prefHeight="200"/>
-        </VBox>
-    </right>
 
 </BorderPane>

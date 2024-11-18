@@ -20,7 +20,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
@@ -33,13 +36,7 @@ import java.util.List;
 public class MyPageController {
 
     @FXML
-    private Label idLabel;
-    @FXML
-    private TextField emailField;
-    @FXML
     private Label birthdayLabel;
-    @FXML
-    private TextField phoneField;
     @FXML
     private Label messageLabel;
     @FXML
@@ -53,11 +50,12 @@ public class MyPageController {
     @FXML
     private ImageView profileImageView;
     @FXML
-    private ImageView centralProfileImageView;
-    @FXML
     private ImageView twitterImage;
     @FXML
     private Label usernameLabel;
+    @FXML
+    private Label emailLabel;
+
     @FXML
     private Button uploadProfileImageButton;
     @FXML
@@ -69,11 +67,21 @@ public class MyPageController {
     @FXML
     private ListView<Post> likedPostsListView;
     @FXML
+    private BorderPane rootPane;
+    @FXML
     private Label postCountLabel;
     @FXML
     private Label followerCountLabel;
     @FXML
     private Label followingCountLabel;
+    @FXML
+    private TabPane infoTabPane;
+    @FXML
+    private TilePane postTilePane;
+    @FXML
+    private TilePane reelsTilePane;
+    @FXML
+    private TilePane likesTilePane;
 
     private UserDAO userDAO = new UserDAO();
     private PostDAO postDAO = new PostDAO();
@@ -146,15 +154,38 @@ public class MyPageController {
     public void initialize() {
         currentUser = LoginController.getCurrentUser();
         if (currentUser != null) {
-            emailField.setText(currentUser.getEmail());
-            phoneField.setText(currentUser.getPhoneNumber());
+            usernameLabel.setText(currentUser.getId());
+            emailLabel.setText(currentUser.getEmail());
+            birthdayLabel.setText(currentUser.getBirthday() != null ? currentUser.getBirthday().toString() : "");
+
+            Image profileImage = getImageFromBytes(currentUser.getProfileImage());
+            profileImageView.setImage(profileImage);
+
+            setCircularProfileImage();
+            loadUserStatistics();
+
+        } else {
+            System.out.println("currentUser is null");
         }
-        Image profileImage = getImageFromBytes(currentUser.getProfileImage());
-        profileImageView.setImage(profileImage);
 
-        centralProfileImageView.setImage(profileImage != null ? profileImage : getDefaultProfileImage());
-        //loadUserInfo();
 
+        loadUserInfo();
+
+        infoTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.getText().equals("게시물")) {
+                loadMyPosts();
+            } else if (newValue.getText().equals("릴스")) {
+                loadMyReels();
+            } else if (newValue.getText().equals("좋아요")) {
+                loadLikedPosts();
+            }
+        });
+    }
+
+    private void setCircularProfileImage() {
+        double radius = profileImageView.getFitWidth() / 2;
+        Circle clip = new Circle(radius, radius, radius);
+        profileImageView.setClip(clip);
     }
 
     public void setUser(User user) {
@@ -164,8 +195,6 @@ public class MyPageController {
         // 프로필 이미지를 데이터베이스에서 불러와 설정
         Image profileImage = getImageFromBytes(user.getProfileImage());
         profileImageView.setImage(profileImage);
-
-        centralProfileImageView.setImage(profileImage != null ? profileImage : getDefaultProfileImage());
 
         loadUserInfo();
         loadMyPosts();
@@ -189,12 +218,8 @@ public class MyPageController {
 
     // 사용자 정보 로드
     private void loadUserInfo() {
-        idLabel.setText(currentUser.getId());
-        emailField.setText(currentUser.getEmail());
-        if (currentUser.getBirthday() != null) {
-            birthdayPicker.setValue(currentUser.getBirthday());
-        }
-        phoneField.setText(currentUser.getPhoneNumber());
+        emailLabel.setText(currentUser.getEmail());
+        birthdayLabel.setText(currentUser.getBirthday() != null ? currentUser.getBirthday().toString() : "");
     }
 
     private void loadUserStatistics() {
@@ -212,30 +237,19 @@ public class MyPageController {
     }
 
     @FXML
-    void handleUpdate(ActionEvent event) {
-        String newEmail = emailField.getText();
-        String newPhone = phoneField.getText();
-        LocalDate newBirthday = birthdayPicker.getValue();
-
-        // 생일이 선택되지 않은 경우 현재 생일 유지
-        if (newBirthday == null && currentUser.getBirthday() != null) {
-            newBirthday = currentUser.getBirthday();
-        }
-
-        boolean success = userDAO.updateUser(currentUser.getId(), newEmail, newPhone, newBirthday);
-        if (success) {
-            messageLabel.setText("정보가 업데이트되었습니다.");
-            // 업데이트된 정보를 currentUser에 반영
-            currentUser.setEmail(newEmail);
-            currentUser.setPhoneNumber(newPhone);
-            currentUser.setBirthday(newBirthday);
-        } else {
-            messageLabel.setText("정보 업데이트에 실패했습니다.");
-        }
+    private void handleFollowerCountClick(MouseEvent event) {
+        // 팔로워 목록 표시 (배경 블러 처리 및 팝업 형태)
+        showFollowerListPopup();
     }
 
     @FXML
-    private void handleProfileImageUpload(ActionEvent event) {
+    private void handleFollowingCountClick(MouseEvent event) {
+        // 팔로우 목록 표시 (배경 블러 처리 및 팝업 형태)
+        showFollowingListPopup();
+    }
+
+    @FXML
+    private void handleProfileImageUpload(MouseEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("프로필 사진 업로드");
         fileChooser.getExtensionFilters().addAll(
@@ -264,7 +278,6 @@ public class MyPageController {
                     // ImageView 업데이트
                     Image profileImage = getImageFromBytes(imageBytes);
                     profileImageView.setImage(profileImage);
-                    centralProfileImageView.setImage(profileImage);
 
                     // 메인 페이지의 프로필 이미지도 업데이트하려면, 메인 페이지 컨트롤러에 접근하거나 창을 다시 로드해야 합니다.
 
@@ -283,88 +296,59 @@ public class MyPageController {
     }
 
     @FXML
-    private void goToMainPage(MouseEvent event) {
+    void handleEditProfile(ActionEvent event) {
         try {
-            // 현재 창을 닫고 메인 창을 다시 로드하는 방식
-            Stage currentStage = (Stage) twitterImage.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EditProfile.fxml"));
             Parent root = loader.load();
 
-            // 필요시 컨트롤러에 사용자 정보 전달
-            MainController mainController = loader.getController();
-            mainController.setUser(currentUser);
+            root.getStylesheets().add(getClass().getResource("styles/styles/css").toExternalForm());
 
-            currentStage.setScene(new Scene(root));
-            currentStage.setTitle("Twitter - Main");
-            currentStage.setWidth(1080);
-            currentStage.setHeight(720);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "메인 페이지 로드 중 오류가 발생했습니다.", ButtonType.OK);
-            alert.showAndWait();
-        }
-    }
+            // EditProfileController에 현재 사용자 정보 전달
+            EditProfileController controller = loader.getController();
+            controller.setUser(currentUser);
 
-
-    @FXML
-    void handleLogout(ActionEvent event) {
-        LoginController.setCurrentUser(null);
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Stage stage = (Stage) idLabel.getScene().getWindow();
-            stage.setScene(new Scene(loader.load()));
-            stage.setTitle("Twitter");
-            stage.setWidth(400);
-            stage.setHeight(600);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    void openPostCreation(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PostCreation.fxml"));
-            Scene scene = new Scene(loader.load());
             Stage stage = new Stage();
-            stage.setTitle("포스트 작성");
-            stage.setScene(scene);
-            stage.show();
+            stage.setScene(new Scene(root));
+            stage.setTitle("프로필 편집");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.setWidth(300);
+            stage.setHeight(400);
+            stage.showAndWait();
+
+            // 편집 후 업데이트된 정보 로드
+            loadUserInfo();
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "포스트 작성 창을 여는 중 오류가 발생했습니다.", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.ERROR, "프로필 편집 창을 여는 중 오류가 발생했습니다.", ButtonType.OK);
             alert.showAndWait();
         }
     }
 
     @FXML
-    void handleEditProfile(ActionEvent event) {
-        String newEmail = emailField.getText().trim();
-        String newPhone = phoneField.getText().trim();
-        LocalDate newBirthday = birthdayPicker.getValue();
-
-        // 생일이 선택되지 않은 경우 현재 생일 유지
-        if (newBirthday == null && currentUser.getBirthday() != null) {
-            newBirthday = currentUser.getBirthday();
-        }
-
-        boolean success = userDAO.updateUserProfile(currentUser.getId(), newEmail, newPhone, newBirthday, newProfileImageBytes);
-        if (success) {
-            messageLabel.setText("프로필이 성공적으로 수정되었습니다.");
-            // 업데이트된 사용자 정보를 다시 로드
-            currentUser = userDAO.getUserById(currentUser.getId());
-            setUser(currentUser);
-            newProfileImageBytes = null; // 이미지 선택 초기화
-        } else {
-            messageLabel.setText("프로필 수정에 실패했습니다.");
-        }
+    private void handleProfileImageClick(MouseEvent event) {
+        // 프로필 이미지 변경 기능 구현
+        handleProfileImageUpload(event);
     }
 
     // 내가 올린 포스트 로드
     private void loadMyPosts() {
         List<Post> myPosts = postDAO.getPostsByUserId(currentUser.getId());
-        ObservableList<Post> myPostsList = FXCollections.observableArrayList(myPosts);
-        myPostsListView.setItems(myPostsList);
+        postTilePane.getChildren().clear();
+        for (Post post : myPosts) {
+            ImageView postImageView = new ImageView();
+            Image postImage = getImageFromBytes(post.getImage());
+            postImageView.setImage(postImage);
+            postImageView.setFitWidth(200);
+            postImageView.setFitHeight(200);
+            postImageView.setPreserveRatio(true);
+            // 클릭 이벤트 등 추가 가능
+            postTilePane.getChildren().add(postImageView);
+        }
+    }
+
+    private void loadMyReels() {
+        // 릴스 로드 로직 구현
     }
 
     // 내가 단 댓글 로드
@@ -377,7 +361,60 @@ public class MyPageController {
     // 내가 좋아요 한 포스트 로드
     private void loadLikedPosts() {
         List<Post> likedPosts = likeDAO.getLikedPostsByUserId(currentUser.getId());
-        ObservableList<Post> likedPostsList = FXCollections.observableArrayList(likedPosts);
-        likedPostsListView.setItems(likedPostsList);
+        likesTilePane.getChildren().clear();
+        for (Post post : likedPosts) {
+            ImageView postImageView = new ImageView();
+            Image postImage = getImageFromBytes(post.getImage());
+            postImageView.setImage(postImage);
+            postImageView.setFitWidth(200);
+            postImageView.setFitHeight(200);
+            postImageView.setPreserveRatio(true);
+            // 클릭 이벤트 등 추가 가능
+            likesTilePane.getChildren().add(postImageView);
+        }
+    }
+
+    private void showFollowerListPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/followlist.fxml"));
+            Parent root = loader.load();
+
+            // FollowController에 현재 사용자 정보와 모드 전달
+            FollowController controller = loader.getController();
+            controller.setUser(currentUser, "followers");
+
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("팔로워 목록");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            loadUserStatistics();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showFollowingListPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/followlist.fxml"));
+            Parent root = loader.load();
+
+            // FollowController에 현재 사용자 정보와 모드 전달
+            FollowController controller = loader.getController();
+            controller.setUser(currentUser, "following");
+
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("팔로우 목록");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            loadUserStatistics();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

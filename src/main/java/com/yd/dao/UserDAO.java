@@ -160,11 +160,11 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // 기본 이미지 사용 시 null 반환
+        return null;
     }
 
     public int getFollowerCount(String userId) {
-        String sql = "SELECT COUNT(*) AS follower_count FROM FOLLOW WHERE FOLLOWER_ID = ?";
+        String sql = "SELECT COUNT(*) AS follower_count FROM FOLLOW WHERE FOLLOWING_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userId);
@@ -179,7 +179,7 @@ public class UserDAO {
     }
 
     public int getFollowingCount(String userId) {
-        String sql = "SELECT COUNT(*) AS following_count FROM FOLLOW WHERE FOLLOWING_ID = ?";
+        String sql = "SELECT COUNT(*) AS following_count FROM FOLLOW WHERE FOLLOWER_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userId);
@@ -215,6 +215,45 @@ public class UserDAO {
             e.printStackTrace();
         }
         return users;
+    }
+
+    public List<User> getFollowers(String userId) {
+        List<User> followers = new ArrayList<>();
+        String query = "SELECT u.* FROM users u JOIN follow f ON u.id = f.follower_id WHERE f.following_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("id"));
+                user.setProfileImage(rs.getBytes("profile_image"));
+                followers.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return followers;
+    }
+
+    public List<User> getFollowing(String userId) {
+        List<User> following = new ArrayList<>();
+        String query = "SELECT u.id, u.email, u.profile_image FROM users u JOIN follow f ON u.id = f.following_id WHERE f.follower_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("id"));
+                user.setEmail(rs.getString("email"));
+                user.setProfileImage(rs.getBytes("profile_image"));
+                following.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return following;
     }
 
 }

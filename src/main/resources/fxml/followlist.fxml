@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.yd.controller.FollowController"
+            stylesheets="@/styles/styles.css">
+    <top>
+        <VBox spacing="10" alignment="CENTER">
+            <!-- 상단 라벨 -->
+            <Label fx:id="headerLabel" text="팔로워" styleClass="header-label"/>
+
+            <!-- 검색란 -->
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="searchField" promptText="검색" styleClass="search-field"/>
+                <Button text="검색" onAction="#handleSearch" styleClass="search-button"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ListView fx:id="followListView" prefWidth="380" prefHeight="580" styleClass="follow-list-view"/>
+    </center>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+</BorderPane>

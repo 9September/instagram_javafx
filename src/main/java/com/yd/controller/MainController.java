@@ -432,6 +432,7 @@ public class MainController {
                 User selectedUser = followingListView.getSelectionModel().getSelectedItem();
                 if (selectedUser != null) {
                     unfollowUser(selectedUser.getId()); // 사용자 아이디로 언팔로우
+
                 }
             }
         });

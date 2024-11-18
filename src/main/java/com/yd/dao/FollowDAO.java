@@ -63,6 +63,25 @@ public class FollowDAO {
         return users;
     }
 
+    public List<User> getFollowers(String userId) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT U.* FROM USERS U JOIN FOLLOW F ON U.ID = F.FOLLOWER_ID WHERE F.FOLLOWING_ID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getString("ID"));
+                user.setProfileImage(rs.getBytes("PROFILE_IMAGE"));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
     public List<User> getRecommendUsers(String userId) {
         List<User> users = new ArrayList<>();
         String sql = "SELECT U.* FROM USERS U WHERE U.ID NOT IN (SELECT FOLLOWING_ID FROM FOLLOW WHERE FOLLOWER_ID = ?) AND U.ID <> ?";
