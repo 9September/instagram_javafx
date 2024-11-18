@@ -1,0 +1,146 @@
+create database if not exists twitter;
+use twitter;
+
+-- 사용자 테이블 생성
+CREATE TABLE if not exists Users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_bestScore INT,
+    last_acess DATETIME,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(15),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 게시물 테이블 생성
+CREATE TABLE if not exists Posts (
+    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- 댓글 테이블 생성
+CREATE TABLE if not exists Comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    text TEXT NOT NULL,
+    parent_comment_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (parent_comment_id) REFERENCES Comments(comment_id)
+);
+
+-- 팔로우 관계 테이블 생성
+CREATE TABLE if not exists Follow (
+    follower_id INT NOT NULL,
+    following_id INT NOT NULL,
+    PRIMARY KEY (follower_id, following_id),
+    FOREIGN KEY (follower_id) REFERENCES Users(user_id),
+    FOREIGN KEY (following_id) REFERENCES Users(user_id)
+);
+
+-- 게시물 좋아요 테이블 생성
+CREATE TABLE if not exists Post_Like (
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    PRIMARY KEY (post_id, user_id),
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- 댓글 좋아요 테이블 생성
+CREATE TABLE if not exists Comment_Like (
+    comment_id INT NOT NULL,
+    user_id INT NOT NULL,
+    PRIMARY KEY (comment_id, user_id),
+    FOREIGN KEY (comment_id) REFERENCES Comments(comment_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Direct Message
+CREATE TABLE IF NOT EXISTS DirectMessages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES Users(user_id),
+    FOREIGN KEY (receiver_id) REFERENCES Users(user_id)
+);
+
+-- notification
+CREATE TABLE IF NOT EXISTS Notifications (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- hashtag and management for tagged posts
+CREATE TABLE IF NOT EXISTS Hashtags (
+    hashtag_id INT AUTO_INCREMENT PRIMARY KEY,
+    hashtag VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Post_Hashtags (
+    post_id INT NOT NULL,
+    hashtag_id INT NOT NULL,
+    PRIMARY KEY (post_id, hashtag_id),
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id),
+    FOREIGN KEY (hashtag_id) REFERENCES Hashtags(hashtag_id)
+);
+-- block list
+CREATE TABLE IF NOT EXISTS BlockList (
+    blocker_id INT NOT NULL,
+    blocked_id INT NOT NULL,
+    PRIMARY KEY (blocker_id, blocked_id),
+    FOREIGN KEY (blocker_id) REFERENCES Users(user_id),
+    FOREIGN KEY (blocked_id) REFERENCES Users(user_id)
+);
+-- retweets
+CREATE TABLE IF NOT EXISTS Retweets (
+    retweet_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    post_id INT NOT NULL,
+    retweet_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (post_id) REFERENCES Posts(post_id)
+);
+-- 계정 생성, 로그인, 로그아웃 관리
+CREATE TABLE IF NOT EXISTS UserSessions (
+    session_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    login_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    logout_time DATETIME,
+    session_token VARCHAR(255) UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+DELIMITER $$
+CREATE TRIGGER update_last_access_after_login
+AFTER INSERT ON UserSessions
+FOR EACH ROW
+BEGIN
+    UPDATE Users
+    SET last_access = NEW.login_time
+    WHERE user_id = NEW.user_id;
+END$$
+
+CREATE TRIGGER update_last_access_after_logout
+AFTER UPDATE ON UserSessions
+FOR EACH ROW
+BEGIN
+    IF NEW.logout_time IS NOT NULL THEN
+        UPDATE Users
+        SET last_access = NEW.logout_time
+        WHERE user_id = NEW.user_id;
+    END IF;
+END$$
+DELIMITER ;
