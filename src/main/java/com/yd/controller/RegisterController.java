@@ -62,37 +62,41 @@ public class RegisterController {
             return;
         }
 
-        // 이메일 형식 검증
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             messageLabel.setText("유효한 이메일 주소를 입력해주세요.");
             return;
         }
 
-        // 비밀번호 강도 검증 (예시: 최소 6자)
         if (password.length() < 6) {
             messageLabel.setText("비밀번호는 최소 6자 이상이어야 합니다.");
             return;
         }
 
         User user = new User(id, password, email, birthday, phone);
-        boolean success = userDAO.registerUser(user);
-        if (success) {
-            messageLabel.setText("회원가입이 완료되었습니다.");
-            // 로그인 화면으로 이동
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-                Stage stage = (Stage) idField.getScene().getWindow();
-                stage.setScene(new Scene(loader.load()));
-                stage.setTitle("Instagram - 로그인");
-                stage.setWidth(400);
-                stage.setHeight(600);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            messageLabel.setText("회원가입에 실패했습니다. 다시 시도해주세요.");
+        int result = userDAO.registerUser(user);
+
+        switch (result) {
+            case 1:
+                messageLabel.setText("회원가입이 완료되었습니다.");
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+                    Stage stage = (Stage) idField.getScene().getWindow();
+                    stage.setScene(new Scene(loader.load()));
+                    stage.setTitle("Instagram - 로그인");
+                    stage.setWidth(400);
+                    stage.setHeight(600);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case -1:
+                messageLabel.setText("이미 사용 중인 이메일입니다.");
+                break;
+            default:
+                messageLabel.setText("회원가입에 실패했습니다. 다시 시도해주세요.");
         }
     }
+
 
     @FXML
     void goToLogin(ActionEvent event) {

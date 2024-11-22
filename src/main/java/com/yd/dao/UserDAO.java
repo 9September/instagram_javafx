@@ -11,7 +11,7 @@ import java.util.List;
 public class UserDAO {
 
     // 사용자 등록
-    public boolean registerUser(User user) {
+    public int registerUser(User user) {
         String sql = "INSERT INTO USERS (ID, PASSWORD, EMAIL, BIRTHDAY, PHONE_NUMBER) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -21,12 +21,20 @@ public class UserDAO {
             stmt.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
             stmt.setString(5, user.getPhoneNumber());
             int rows = stmt.executeUpdate();
-            return rows > 0;
+            if (rows > 0)
+                System.out.println("not error");
+            	return 1;
+        } catch (SQLIntegrityConstraintViolationException e) {
+        	 if (e.getMessage().contains("EMAIL")) {
+                 System.out.println("Duplicate EMAIL detected");
+                 return -1; // EMAIL 중복
+             }
         } catch (SQLException e) {
-            // 예외 로그 출력
             e.printStackTrace();
-            return false;
+            System.out.println("error");
         }
+
+        return 0;
     }
 
     // 사용자 로그인
@@ -160,11 +168,11 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return null; // 기본 이미지 사용 시 null 반환
     }
 
     public int getFollowerCount(String userId) {
-        String sql = "SELECT COUNT(*) AS follower_count FROM FOLLOW WHERE FOLLOWING_ID = ?";
+        String sql = "SELECT COUNT(*) AS follower_count FROM FOLLOW WHERE FOLLOWER_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userId);
@@ -179,7 +187,7 @@ public class UserDAO {
     }
 
     public int getFollowingCount(String userId) {
-        String sql = "SELECT COUNT(*) AS following_count FROM FOLLOW WHERE FOLLOWER_ID = ?";
+        String sql = "SELECT COUNT(*) AS following_count FROM FOLLOW WHERE FOLLOWING_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userId);
@@ -215,45 +223,6 @@ public class UserDAO {
             e.printStackTrace();
         }
         return users;
-    }
-
-    public List<User> getFollowers(String userId) {
-        List<User> followers = new ArrayList<>();
-        String query = "SELECT u.* FROM users u JOIN follow f ON u.id = f.follower_id WHERE f.following_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, userId);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getString("id"));
-                user.setProfileImage(rs.getBytes("profile_image"));
-                followers.add(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return followers;
-    }
-
-    public List<User> getFollowing(String userId) {
-        List<User> following = new ArrayList<>();
-        String query = "SELECT u.id, u.email, u.profile_image FROM users u JOIN follow f ON u.id = f.following_id WHERE f.follower_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, userId);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                User user = new User();
-                user.setId(rs.getString("id"));
-                user.setEmail(rs.getString("email"));
-                user.setProfileImage(rs.getBytes("profile_image"));
-                following.add(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return following;
     }
 
 }
