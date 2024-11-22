@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54397705-c31d-4d2c-8160-32f19a20b147" name="Changes" comment="">
+    <list default="true" id="54397705-c31d-4d2c-8160-32f19a20b147" name="Changes" comment="mypage system update">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c6d2de37-4739-4966-b281-a69033b190be.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c6d2de37-4739-4966-b281-a69033b190be.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/controller/ExploreController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/controller/ExploreController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/controller/MainController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/controller/MyPageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/controller/MyPageController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/dao/FollowDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/dao/FollowDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/dao/UserDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/util/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/util/DatabaseConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/mypage.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/mypage.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/postcreation.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/postcreation.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/styles/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/styles/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -31,6 +29,10 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -106,10 +108,31 @@
       <workItem from="1731908074060" duration="88000" />
       <workItem from="1731908217631" duration="14000" />
       <workItem from="1731908464741" duration="5000" />
+      <workItem from="1731908484884" duration="84000" />
+      <workItem from="1731978318657" duration="58000" />
+      <workItem from="1731978382700" duration="1743000" />
+      <workItem from="1732013261128" duration="253000" />
+      <workItem from="1732016098027" duration="47000" />
+      <workItem from="1732016829760" duration="476000" />
+      <workItem from="1732017331958" duration="1621000" />
+      <workItem from="1732269288553" duration="958000" />
     </task>
+    <task id="LOCAL-00001" summary="mypage system update">
+      <option name="closed" value="true" />
+      <created>1731908554082</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1731908554082</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="mypage system update" />
+    <option name="LAST_COMMIT_MESSAGE" value="mypage system update" />
   </component>
 </project>

@@ -30,7 +30,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.util.List;
 
 public class MyPageController {
@@ -298,10 +297,10 @@ public class MyPageController {
     @FXML
     void handleEditProfile(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EditProfile.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/editprofile.fxml"));
             Parent root = loader.load();
 
-            root.getStylesheets().add(getClass().getResource("styles/styles/css").toExternalForm());
+            root.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
 
             // EditProfileController에 현재 사용자 정보 전달
             EditProfileController controller = loader.getController();

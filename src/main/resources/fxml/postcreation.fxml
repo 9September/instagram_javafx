@@ -14,7 +14,7 @@
         <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
     </padding>
     <!-- 포스트 작성 영역을 별도로 분리 -->
-    <Label text="포스트 작성" styleClass="username-label"/>
+    <Label text="게시물 작성" styleClass="username-label"/>
     <HBox spacing="10">
         <VBox spacing="5" HBox.hgrow="ALWAYS">
             <TextArea fx:id="postTextArea" promptText="What's happening?" HBox.hgrow="ALWAYS" styleClass="text-field-small"/>

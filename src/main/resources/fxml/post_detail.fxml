@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.yd.controller.PostController"
+            stylesheets="@/styles/styles.css"
+            styleClass="post-detail-container">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" padding="10">
+            <Button text="뒤로가기" onAction="#handleBackButton" styleClass="back-button"/>
+            <Label fx:id="postTitleLabel" text="포스트 제목" styleClass="post-title-label"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="CENTER">
+            <!-- 포스트 이미지 -->
+            <ImageView fx:id="postImageView" fitWidth="400" fitHeight="400" preserveRatio="true" smooth="true" cache="true"/>
+
+            <!-- 포스트 설명 -->
+            <Label fx:id="postDescriptionLabel" text="포스트 설명" wrapText="true" styleClass="post-description-label"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="20" alignment="CENTER_LEFT" padding="10">
+            <Label fx:id="authorLabel" text="작성자: 사용자ID" styleClass="author-label"/>
+            <Label fx:id="likesLabel" text="좋아요: 0" styleClass="likes-label"/>
+            <!-- 추가적인 정보나 버튼을 여기에 추가할 수 있습니다 -->
+        </HBox>
+    </bottom>
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+</BorderPane>

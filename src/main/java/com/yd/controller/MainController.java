@@ -3,7 +3,6 @@ package com.yd.controller;
 import com.yd.dao.FollowDAO;
 import com.yd.dao.PostDAO;
 import com.yd.dao.UserDAO;
-import com.yd.model.Follow;
 import com.yd.model.Post;
 import com.yd.model.User;
 import javafx.collections.FXCollections;
@@ -254,7 +253,7 @@ public class MainController {
                 // 콘텐츠에 헤더, 텍스트, 이미지 추가
                 content.getChildren().addAll(header, textLabel, postImageView, footer);
                 content.setSpacing(5);
-                content.setStyle("-fx-background-color: rgba(255, 255, 255, 0.95); -fx-padding: 15; -fx-spacing: 10; -fx-background-radius: 5;");
+                content.setStyle("-fx-background-color: rgba(44,44,44,0.95); -fx-padding: 15; -fx-spacing: 10; -fx-background-radius: 3;");
             }
 
             @Override

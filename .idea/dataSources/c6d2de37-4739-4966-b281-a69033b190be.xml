@@ -1037,22 +1037,25 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <schema id="300" parent="1" name="TWITTER2">
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
-    <user id="301" parent="1" name="mysql.infoschema">
+    <schema id="301" parent="1" name="INSTARGRAM">
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </schema>
+    <user id="302" parent="1" name="mysql.infoschema">
       <CanLogin>0</CanLogin>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <user id="302" parent="1" name="mysql.session">
+    <user id="303" parent="1" name="mysql.session">
       <CanLogin>0</CanLogin>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <user id="303" parent="1" name="mysql.sys">
+    <user id="304" parent="1" name="mysql.sys">
       <CanLogin>0</CanLogin>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <user id="304" parent="1" name="root">
+    <user id="305" parent="1" name="root">
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
