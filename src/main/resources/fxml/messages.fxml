@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.yd.controller.MessageController" spacing="10" alignment="CENTER">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10" />
+    </padding>
+
+    <!-- 팔로잉 목록 -->
+    <VBox spacing="10" prefWidth="200">
+        <Label text="Following" style="-fx-font-size: 16px;" />
+        <ListView fx:id="followingListView" prefHeight="300" onMouseClicked="#handleUserSelection" />
+    </VBox>
+
+    <!-- 메시지 창 -->
+    <VBox spacing="10" alignment="CENTER" prefWidth="400">
+        <Label text="Messages" style="-fx-font-size: 16px;" />
+        <ListView fx:id="messageListView" prefHeight="300" />
+        <HBox spacing="10">
+            <TextField fx:id="messageInputField" promptText="Type a message..." />
+            <Button text="Send" onAction="#handleSendMessage" />
+        </HBox>
+    </VBox>
+</HBox>
