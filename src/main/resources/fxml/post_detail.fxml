@@ -11,12 +11,6 @@
             stylesheets="@/styles/styles.css"
             styleClass="post-detail-container">
 
-    <top>
-        <HBox spacing="10" alignment="CENTER_LEFT" padding="10">
-            <Button text="뒤로가기" onAction="#handleBackButton" styleClass="back-button"/>
-            <Label fx:id="postTitleLabel" text="포스트 제목" styleClass="post-title-label"/>
-        </HBox>
-    </top>
 
     <center>
         <VBox spacing="20" alignment="CENTER">

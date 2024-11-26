@@ -41,30 +41,6 @@ public class ReelsDAO {
         return reels;
     }
 
-    // 특정 Reel 가져오기
-    public Reel getReelById(int reelId) {
-        Reel reel = null;
-        String sql = "SELECT * FROM REELS WHERE REEL_ID = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, reelId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                reel = new Reel();
-                reel.setReelId(rs.getInt("REEL_ID"));
-                reel.setVideoUrl(rs.getString("VIDEO_URL"));
-                reel.setDescription(rs.getString("DESCRIPTION"));
-                reel.setUploaderId(rs.getString("UPLOADER_ID"));
-                reel.setCreatedAt(rs.getTimestamp("CREATED_AT").toLocalDateTime());
-                reel.setNumOfLikes(rs.getInt("NUM_OF_LIKES"));
-                reel.setNumOfComments(rs.getInt("NUM_OF_COMMENTS"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return reel;
-    }
-
     // Reel 추가하기
     public boolean addReel(Reel reel) {
         String sql = "INSERT INTO REELS (VIDEO_URL, DESCRIPTION, UPLOADER_ID, CREATED_AT, NUM_OF_LIKES, NUM_OF_COMMENTS) VALUES (?, ?, ?, ?, ?, ?)";
