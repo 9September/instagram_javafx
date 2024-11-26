@@ -195,7 +195,7 @@ public class UserDAO {
 
     public List<User> searchUsersByIdOrName(String query) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM USERS WHERE ID LIKE ? OR NAME LIKE ?";
+        String sql = "SELECT * FROM USERS WHERE ID LIKE ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             String wildcardQuery = "%" + query + "%";
@@ -208,7 +208,7 @@ public class UserDAO {
                 user.setPassword(rs.getString("PASSWORD"));
                 user.setEmail(rs.getString("EMAIL"));
                 user.setBirthday(rs.getDate("BIRTHDAY").toLocalDate());
-                user.setPhoneNumber(rs.getString("PHONE"));
+                user.setPhoneNumber(rs.getString("PHONE_NUMBER"));
                 users.add(user);
             }
         } catch (SQLException e) {

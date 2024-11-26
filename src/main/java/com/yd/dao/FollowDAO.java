@@ -81,6 +81,7 @@ public class FollowDAO {
         }
         return users;
     }
+    
 
     public List<User> getRecommendUsers(String userId) {
         List<User> users = new ArrayList<>();
@@ -101,4 +102,24 @@ public class FollowDAO {
         }
         return users;
     }
+    public List<String> getFollowingUserIds(String userId) {
+        List<String> following = new ArrayList<>();
+        String sql = "SELECT FOLLOWING_ID FROM FOLLOW WHERE FOLLOWER_ID = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                following.add(rs.getString("FOLLOWING_ID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return following;
+    }
+
 }

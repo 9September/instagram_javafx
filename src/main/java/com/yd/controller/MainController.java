@@ -3,6 +3,8 @@ package com.yd.controller;
 import com.yd.dao.FollowDAO;
 import com.yd.dao.PostDAO;
 import com.yd.dao.UserDAO;
+import com.yd.dao.MessageDAO;
+import com.yd.network.ChatClient;
 import com.yd.model.Post;
 import com.yd.model.User;
 import javafx.collections.FXCollections;
@@ -26,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javafx.application.Platform;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +36,20 @@ import java.nio.file.Files;
 import java.util.List;
 
 public class MainController {
+	
+	private static MainController instance;
+	
+	public MainController() {
+        instance = this;
+    }
 
+	public static MainController getInstance() {
+        return instance;
+    }
+	
+	@FXML
+	private Button messagesButton; 
+	
     @FXML
     private TextArea postTextArea;
 
@@ -57,6 +73,8 @@ public class MainController {
 
     @FXML
     private ImageView attachedImageView;
+    
+    private MessageDAO messageDAO;
 
     private int postOffset = 0;
     private final int postLimit = 20;
@@ -93,8 +111,24 @@ public class MainController {
 
     @FXML
     void goToMessages(ActionEvent event) {
-        loadUI("messages.fxml");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/messages.fxml"));
+            Node node = loader.load();
+
+            // MessageController와 연결
+            MessageController messageController = loader.getController();
+            messageController.initializeChatClient(currentUser.getId());
+            messageController.setMainController(this); // MainController 설정
+
+            // mainBorderPane의 중앙에 메시지 화면 로드
+            mainBorderPane.setCenter(node);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("오류", "메시지 화면을 로드하는 중 오류가 발생했습니다.");
+        }
     }
+
+
 
     @FXML
     void goToNotifications(ActionEvent event) {
@@ -115,6 +149,15 @@ public class MainController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + fxml));
             Node node = loader.load();
+
+            // 메시지 화면인 경우에만 MessageController 초기화
+            if ("messages.fxml".equals(fxml)) {
+                // MessageController와 연결
+                MessageController controller = loader.getController();
+                controller.initializeChatClient(currentUser.getId()); // 사용자 ID 전달
+            }
+
+            // 화면 중앙에 새로운 노드 설정
             mainBorderPane.setCenter(node);
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,6 +167,7 @@ public class MainController {
     }
 
 
+
     @FXML
     public void initialize() {
         currentUser = LoginController.getCurrentUser();
@@ -131,7 +175,8 @@ public class MainController {
             goToLogin();
             return;
         }
-
+        
+        messageDAO = new MessageDAO();
         // 프로필 이미지 초기화
         Image profileImage = getImageFromBytes(currentUser.getProfileImage());
         profileImageView.setImage(profileImage);
@@ -142,6 +187,7 @@ public class MainController {
         setupRecommendListView();
         loadRecommendList();
         rebuildCenterContent();
+        updateMessageNotification();
 
     }
 
@@ -642,6 +688,7 @@ public class MainController {
             alert.showAndWait();
         }
     }
+    
 
     public void setUser(User user) {
         this.currentUser = user;
@@ -650,4 +697,35 @@ public class MainController {
         Image profileImage = getImageFromBytes(user.getProfileImage());
         profileImageView.setImage(profileImage);
     }
+    private int getUnreadMessagesCount() {
+        int unreadCount = 0;
+        try {
+            // DAO 객체 생성
+            MessageDAO messageDAO = new MessageDAO();
+            
+            // 현재 사용자의 미확인 메시지 수 가져오기
+            unreadCount = messageDAO.getUnreadMessagesCount(currentUser.getId());
+            System.out.println("미확인 메시지 수: " + unreadCount);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return unreadCount;
+    }
+    
+    public void updateMessageNotification() {
+    	int unreadMessagesCount = messageDAO.getUnreadMessagesCount(currentUser.getId());
+        Platform.runLater(() -> {
+            Button messagesButton = (Button) mainBorderPane.lookup("#messagesButton");
+            if (messagesButton != null) {
+                if (unreadMessagesCount > 0) {
+                    messagesButton.setText("Messages (" + unreadMessagesCount + ")");
+                } else {
+                    messagesButton.setText("Messages");
+                }
+            } else {
+                System.out.println("messagesButton을 찾을 수 없습니다.");
+            }
+        });
+    }
+    
 }

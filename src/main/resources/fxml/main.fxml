@@ -74,7 +74,7 @@
                 </Button>
 
                 <!-- 메시지 버튼 -->
-                <Button onAction="#goToMessages" styleClass="sidebar-button">
+                <Button fx:id="messagesButton" onAction="#goToMessages" styleClass="sidebar-button">
                     <graphic>
                         <ImageView fitWidth="24" fitHeight="24">
                             <image>
@@ -86,7 +86,7 @@
                 </Button>
 
                 <!-- 알림 버튼 -->
-                <Button onAction="#goToNotifications" styleClass="sidebar-button">
+                <Button fx:id="notificationsButton" onAction="#goToNotifications" styleClass="sidebar-button">
                     <graphic>
                         <ImageView fitWidth="24" fitHeight="24">
                             <image>
