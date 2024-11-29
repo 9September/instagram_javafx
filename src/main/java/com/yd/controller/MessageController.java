@@ -26,22 +26,23 @@ public class MessageController {
 
     private String currentUserId; // 현재 사용자 ID
     private String selectedUserId; // 선택된 사용자 ID
-    private MainController mainController; 
-    
+    private MainController mainController;
+
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
     }
-    
-    public void initializeChatClient(String currentUserId) {
+
+    public void initializeChatClient(String currentUserId, MainController mainController) {
         this.currentUserId = currentUserId;
+        this.mainController = mainController;
 
         // ChatClient 초기화
-        chatClient = new ChatClient(currentUserId, this);
+        chatClient = new ChatClient(currentUserId, this, mainController);
         chatClient.start();
 
         // 팔로잉 목록 로드
         loadFollowingList();
-        
+
         // 팔로잉 목록의 클릭 이벤트 설정
         followingListView.setOnMouseClicked(this::handleUserSelection);
     }
@@ -53,7 +54,7 @@ public class MessageController {
             followingListView.getItems().addAll(followingList);
         });
     }
-    
+
     @FXML
     private void handleUserSelection(MouseEvent event) {
         selectedUserId = followingListView.getSelectionModel().getSelectedItem();
@@ -85,8 +86,6 @@ public class MessageController {
         });
     }
 
-
-
     @FXML
     private void handleSendMessage() {
         String messageText = messageInputField.getText();
@@ -100,6 +99,9 @@ public class MessageController {
             Platform.runLater(() -> messageListView.getItems().add(currentUserId + ": " + messageText));
 
             messageInputField.clear();
+
+            // 서버에 메시지 전송
+            chatClient.sendMessage(selectedUserId + ": " + messageText);
         } else {
             System.out.println("메시지 전송 실패: 대상 사용자를 선택하지 않았습니다.");
         }
@@ -114,6 +116,7 @@ public class MessageController {
             }
         });
     }
+
     public void setChatClient(ChatClient chatClient) {
         this.chatClient = chatClient;
     }

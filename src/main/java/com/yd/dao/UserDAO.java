@@ -256,4 +256,47 @@ public class UserDAO {
         return following;
     }
 
+    public void setUserOnlineStatus(String userId, boolean isOnline) {
+        String query = "UPDATE USERS SET is_online = ? WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            if (conn == null) {
+                System.err.println("Database connection failed.");
+                return;
+            }
+
+            stmt.setBoolean(1, isOnline);
+            stmt.setString(2, userId);
+            int rowsUpdated = stmt.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated);
+        } catch (SQLException e) {
+            System.err.println("SQLException occurred while setting user online status: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+    public boolean isUserOnline(String userId) {
+        String query = "SELECT is_online FROM USERS WHERE ID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            if (conn == null) {
+                System.err.println("Database connection failed.");
+                return false;
+            }
+
+            stmt.setString(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean("is_online");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("SQLException occurred while checking user online status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

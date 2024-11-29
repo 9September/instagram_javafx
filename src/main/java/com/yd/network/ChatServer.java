@@ -1,33 +1,44 @@
 package com.yd.network;
 
 import com.yd.dao.MessageDAO;
+import com.yd.dao.UserDAO;
 import com.yd.model.Message;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class ChatServer {
-    private static Map<String, PrintWriter> clientWriters = new HashMap<>();
+    private static Map<String, ClientHandler> clientHandlers = new ConcurrentHashMap<>();
     private static MessageDAO messageDAO = new MessageDAO();
 
     public static void main(String[] args) {
         System.out.println("Chat server started...");
+        ExecutorService executorService = Executors.newCachedThreadPool();
         try (ServerSocket serverSocket = new ServerSocket(12345)) {
             while (true) {
-                new ClientHandler(serverSocket.accept()).start();
+                Socket clientSocket = serverSocket.accept();
+                ClientHandler clientHandler = new ClientHandler(clientSocket);
+                executorService.submit(clientHandler);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static class ClientHandler extends Thread {
+    public static boolean isUserOnline(String userId) {
+        return clientHandlers.containsKey(userId);
+    }
+
+    public static void broadcastUserStatus(String userId, boolean isOnline) {
+        String statusMessage = userId + (isOnline ? " is now online." : " is now offline.");
+        for (ClientHandler handler : clientHandlers.values()) {
+            handler.sendMessage(statusMessage);
+        }
+    }
+
+    private static class ClientHandler implements Runnable {
         private Socket socket;
         private String clientId;
         private PrintWriter out;
@@ -36,16 +47,19 @@ public class ChatServer {
             this.socket = socket;
         }
 
+        @Override
         public void run() {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                  PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-                 
+
                 this.out = out;
                 clientId = in.readLine();
-                synchronized (clientWriters) {
-                    clientWriters.put(clientId, out);
+                synchronized (clientHandlers) {
+                    clientHandlers.put(clientId, this);
                 }
                 System.out.println(clientId + " connected.");
+                new UserDAO().setUserOnlineStatus(clientId, true);
+                broadcastUserStatus(clientId, true);
 
                 String message;
                 while ((message = in.readLine()) != null) {
@@ -59,9 +73,12 @@ public class ChatServer {
             } catch (IOException e) {
                 System.out.println(clientId + " disconnected.");
             } finally {
-                synchronized (clientWriters) {
-                    clientWriters.remove(clientId);
+                synchronized (clientHandlers) {
+                    clientHandlers.remove(clientId);
                 }
+                new UserDAO().setUserOnlineStatus(clientId, false);  // 연결 종료 시 사용자 상태를 오프라인으로 업데이트
+                broadcastUserStatus(clientId, false);
+                System.out.println(clientId + " disconnected and set to offline.");
             }
         }
 
@@ -69,10 +86,28 @@ public class ChatServer {
             Message message = new Message(senderId, receiverId, messageText);
             messageDAO.saveMessage(message);
 
-            PrintWriter receiverOut = clientWriters.get(receiverId);
-            if (receiverOut != null) {
-                receiverOut.println(senderId + ": " + messageText);
+            // 수신자가 온라인인지 확인
+            ClientHandler receiverHandler = clientHandlers.get(receiverId);
+            if (receiverHandler != null) {
+                // 수신자에게만 메시지 전송 (송신자에게는 전송하지 않음)
+                receiverHandler.sendMessage(senderId + ": " + messageText);
+            } else {
+                // 수신자가 오프라인일 경우 로그 출력
+                System.out.println("Receiver not online or handler not found: " + receiverId);
+            }
+        }
+
+
+        public void sendMessage(String message) {
+            if (out != null) {
+                out.println(message);
             }
         }
     }
+    private void handleReadMessage(String messageId) {
+        int id = Integer.parseInt(messageId);
+        messageDAO.updateMessageStatusToRead(id);
+    }
+
+
 }

@@ -5,6 +5,7 @@ import com.yd.dao.PostDAO;
 import com.yd.dao.UserDAO;
 import com.yd.dao.MessageDAO;
 import com.yd.network.ChatClient;
+import com.yd.network.ChatServer;
 import com.yd.model.Post;
 import com.yd.model.User;
 import javafx.collections.FXCollections;
@@ -34,22 +35,29 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainController {
-	
-	private static MainController instance;
-	
-	public MainController() {
+    private Map<String, Boolean> userStatusMap = new HashMap<>();
+    private ChatClient chatClient;
+    private static MainController instance;
+    private Stage stage;
+
+    public MainController() {
         instance = this;
     }
 
-	public static MainController getInstance() {
+    public static MainController getInstance() {
         return instance;
     }
-	
-	@FXML
-	private Button messagesButton; 
-	
+
+    @FXML
+    private MessageController messageController;
+
+    @FXML
+    private Button messagesButton;
+
     @FXML
     private TextArea postTextArea;
 
@@ -73,7 +81,7 @@ public class MainController {
 
     @FXML
     private ImageView attachedImageView;
-    
+
     private MessageDAO messageDAO;
 
     private int postOffset = 0;
@@ -92,6 +100,7 @@ public class MainController {
     @FXML
     void goToHome(ActionEvent event) {
         rebuildCenterContent();
+        loadFollowingList();
     }
 
     @FXML
@@ -117,7 +126,7 @@ public class MainController {
 
             // MessageController와 연결
             MessageController messageController = loader.getController();
-            messageController.initializeChatClient(currentUser.getId());
+            messageController.initializeChatClient(currentUser.getId(), this);
             messageController.setMainController(this); // MainController 설정
 
             // mainBorderPane의 중앙에 메시지 화면 로드
@@ -154,7 +163,7 @@ public class MainController {
             if ("messages.fxml".equals(fxml)) {
                 // MessageController와 연결
                 MessageController controller = loader.getController();
-                controller.initializeChatClient(currentUser.getId()); // 사용자 ID 전달
+                controller.initializeChatClient(currentUser.getId(), this); // 사용자 ID 전달
             }
 
             // 화면 중앙에 새로운 노드 설정
@@ -166,38 +175,69 @@ public class MainController {
         }
     }
 
-
-
     @FXML
     public void initialize() {
-        currentUser = LoginController.getCurrentUser();
-        if (currentUser == null) {
-            goToLogin();
-            return;
-        }
-        
-        messageDAO = new MessageDAO();
-        // 프로필 이미지 초기화
-        Image profileImage = getImageFromBytes(currentUser.getProfileImage());
-        profileImageView.setImage(profileImage);
+        Platform.runLater(() -> {
+            // 현재 로그인된 사용자 정보 가져오기
+            currentUser = LoginController.getCurrentUser();
+            if (currentUser == null) {
+                goToLogin();  // 로그인 화면으로 전환
+                return;
+            }
 
-        // 다른 초기화 작업
-        loadFollowingList();
-        setupFollowingListView();
-        setupRecommendListView();
-        loadRecommendList();
-        rebuildCenterContent();
-        updateMessageNotification();
+            // 데이터베이스 연결 객체 초기화
+            messageDAO = new MessageDAO();
 
+            // 프로필 이미지 초기화
+            Image profileImage = getImageFromBytes(currentUser.getProfileImage());
+            profileImageView.setImage(profileImage);
+
+            // ChatClient 초기화 (채팅 클라이언트 시작)
+            chatClient = new ChatClient(currentUser.getId(), messageController, this);
+            chatClient.start();
+
+            // 다른 초기화 작업 수행
+            loadFollowingList();
+            setupFollowingListView();
+            setupRecommendListView();
+            loadRecommendList();
+            rebuildCenterContent();
+            updateMessageNotification();
+
+            // 창 닫기 이벤트 설정 (앱 종료 시 사용자 오프라인 상태로 변경)
+            stage = (Stage) mainBorderPane.getScene().getWindow(); // mainBorderPane을 통해 Stage를 가져옴
+            stage.setOnCloseRequest(event -> handleWindowClose());
+        });
     }
+
+
+    private void handleWindowClose() {
+        if (currentUser != null) {
+            // 사용자를 오프라인 상태로 설정
+            new UserDAO().setUserOnlineStatus(currentUser.getId(), false);
+            System.out.println("User " + currentUser.getId() + " is now set to offline.");
+
+            // ChatClient 연결 해제 및 리소스 정리
+            if (chatClient != null) {
+                chatClient.stopClient(); // 클라이언트 종료
+            }
+        }
+        Platform.exit(); // JavaFX 응용 프로그램 종료
+    }
+
 
     // 바이트 배열을 Image로 변환하는 유틸리티 메서드
     private Image getImageFromBytes(byte[] imageBytes) {
-        if (imageBytes != null && imageBytes.length > 0) {
-            return new Image(new ByteArrayInputStream(imageBytes));
-        } else {
-            // 기본 이미지 로드
-            return new Image(getClass().getResourceAsStream("/images/default_profile.jpg"));
+        try {
+            if (imageBytes != null && imageBytes.length > 0) {
+                return new Image(new ByteArrayInputStream(imageBytes));
+            } else {
+                // 기본 이미지 로드
+                return getDefaultProfileImage();
+            }
+        } catch (Exception e) {
+            // 예외 발생 시 기본 이미지 로드
+            return getDefaultProfileImage();
         }
     }
 
@@ -371,6 +411,7 @@ public class MainController {
             private Image getDefaultProfileImage() {
                 return new Image(getClass().getResourceAsStream("/images/default_profile.jpg"));
             }
+
         });
     }
 
@@ -427,17 +468,28 @@ public class MainController {
     // 팔로우 목록 로드
     private void loadFollowingList() {
         List<User> followingUsers = followDAO.getFollowingUsers(currentUser.getId());
+
+        // 온라인 상태 업데이트
+        UserDAO userDAO = new UserDAO();  // 객체를 한 번만 생성해서 사용
+        for (User user : followingUsers) {
+            boolean isOnline = userDAO.isUserOnline(user.getId());
+            user.setOnline(isOnline);
+        }
+
         ObservableList<User> items = FXCollections.observableArrayList(followingUsers);
         followingListView.setPlaceholder(new Label("팔로잉 목록이 없습니다."));
         followingListView.setItems(items);
+
+        // 팔로우 목록을 로드할 때마다 셀 설정 적용
+        setupFollowingListView();
     }
 
-    // 팔로우 목록 ListView 설정
     private void setupFollowingListView() {
         followingListView.setCellFactory(param -> new ListCell<>() {
             private HBox content;
             private ImageView profileImageView;
             private Label nameLabel;
+            private Label statusLabel;
 
             {
                 content = new HBox(10);
@@ -449,7 +501,10 @@ public class MainController {
                 nameLabel = new Label();
                 nameLabel.getStyleClass().add("user-name-label");
 
-                content.getChildren().addAll(profileImageView, nameLabel);
+                statusLabel = new Label();
+                statusLabel.getStyleClass().add("user-status-label");
+
+                content.getChildren().addAll(profileImageView, nameLabel, statusLabel);
             }
 
             @Override
@@ -459,9 +514,14 @@ public class MainController {
                     setText(null);
                     setGraphic(null);
                 } else {
+                    // 프로필 이미지 설정
                     Image profileImage = getImageFromBytes(user.getProfileImage());
                     profileImageView.setImage(profileImage != null ? profileImage : getDefaultProfileImage());
                     nameLabel.setText(user.getId());
+
+                    // 온라인 상태 표시 업데이트
+                    statusLabel.setText(user.isOnline() ? "온라인" : "오프라인");
+                    statusLabel.setStyle(user.isOnline() ? "-fx-text-fill: green;" : "-fx-text-fill: red;");
 
                     setGraphic(content);
 
@@ -477,11 +537,16 @@ public class MainController {
                 User selectedUser = followingListView.getSelectionModel().getSelectedItem();
                 if (selectedUser != null) {
                     unfollowUser(selectedUser.getId()); // 사용자 아이디로 언팔로우
-
                 }
             }
         });
     }
+
+
+
+
+
+
 
     private void setupRecommendListView() {
         recommendListView.setCellFactory(param -> new ListCell<>() {
@@ -688,21 +753,24 @@ public class MainController {
             alert.showAndWait();
         }
     }
-    
+
 
     public void setUser(User user) {
         this.currentUser = user;
+        loadFollowingList();
 
         // 프로필 이미지 설정
         Image profileImage = getImageFromBytes(user.getProfileImage());
         profileImageView.setImage(profileImage);
     }
+
+
     private int getUnreadMessagesCount() {
         int unreadCount = 0;
         try {
             // DAO 객체 생성
             MessageDAO messageDAO = new MessageDAO();
-            
+
             // 현재 사용자의 미확인 메시지 수 가져오기
             unreadCount = messageDAO.getUnreadMessagesCount(currentUser.getId());
             System.out.println("미확인 메시지 수: " + unreadCount);
@@ -711,9 +779,9 @@ public class MainController {
         }
         return unreadCount;
     }
-    
+
     public void updateMessageNotification() {
-    	int unreadMessagesCount = messageDAO.getUnreadMessagesCount(currentUser.getId());
+        int unreadMessagesCount = messageDAO.getUnreadMessagesCount(currentUser.getId());
         Platform.runLater(() -> {
             Button messagesButton = (Button) mainBorderPane.lookup("#messagesButton");
             if (messagesButton != null) {
@@ -727,5 +795,107 @@ public class MainController {
             }
         });
     }
-    
+
+    public void updateUserStatus(String userId, boolean isOnline) {
+        Platform.runLater(() -> {
+            for (User user : followingListView.getItems()) {
+                if (user.getId().equals(userId)) {
+                    user.setOnline(isOnline); // User 객체에 온라인 상태 속성 추가
+                    followingListView.refresh();
+                    break;
+                }
+            }
+        });
+    }
+
+
+    public void updateUserStatus(String statusMessage) {
+        // 예: "sbma0122 is now online" 이런 메시지로부터 사용자 ID와 상태 추출
+        String[] parts = statusMessage.split(" ", 3);
+        if (parts.length == 3) {
+            String userId = parts[0];
+            boolean isOnline = parts[2].equals("online");
+
+            // 팔로잉 목록에서 해당 사용자의 상태를 업데이트
+            for (User user : followingListView.getItems()) {
+                if (user.getId().equals(userId)) {
+                    // UI 업데이트
+                    Platform.runLater(() -> {
+                        for (int i = 0; i < followingListView.getItems().size(); i++) {
+                            User currentUser = followingListView.getItems().get(i);
+                            if (currentUser.getId().equals(userId)) {
+                                currentUser.setOnline(isOnline);
+                                followingListView.refresh();
+                                break;
+                            }
+                        }
+                    });
+                    break;
+                }
+            }
+        }
+    }
+    @FXML
+    public void handleExit() {
+        if (chatClient != null && chatClient.isAlive()) {
+            chatClient.interrupt();  // 클라이언트 스레드 종료 요청
+        }
+        Platform.exit();
+        System.exit(0);
+    }
+    public void displayConnectionError(String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("연결 오류");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+    public void updateFollowingStatus(String userId, boolean isOnline) {
+        Platform.runLater(() -> {
+            for (User user : followingListView.getItems()) {
+                if (user.getId().equals(userId)) {
+                    user.setOnline(isOnline);
+                    followingListView.refresh();
+                    break;
+                }
+            }
+        });
+    }
+    public MessageController getMessageController() {
+        return this.messageController; // 메세지 컨트롤러가 초기화 되어있다면 반환
+    }
+
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        // 현재 사용자의 온라인 상태를 오프라인으로 변경
+        new UserDAO().setUserOnlineStatus(currentUser.getId(), false);
+        System.out.println("User " + currentUser.getId() + " has logged out.");
+
+        // 채팅 클라이언트 종료 및 연결 해제 (리소스 정리)
+        if (chatClient != null) {
+            chatClient.stopClient(); // chatClient 연결 해제 메서드 호출
+        }
+
+        // 현재 창을 닫고 로그인 화면으로 전환
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        currentStage.close(); // 현재 스테이지(메인 화면) 닫기
+
+        try {
+            // 로그인 화면 로드 및 표시
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            Parent root = loader.load();
+            Stage loginStage = new Stage();
+            loginStage.setScene(new Scene(root));
+            loginStage.setTitle("Login");
+            loginStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 }

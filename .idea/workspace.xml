@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54397705-c31d-4d2c-8160-32f19a20b147" name="Changes" comment="Network update">
+    <list default="true" id="54397705-c31d-4d2c-8160-32f19a20b147" name="Changes" comment="Database update">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/controller/MainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/controller/MessageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/controller/MessageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/dao/MessageDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/dao/MessageDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/dao/UserDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/network/ChatClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/network/ChatClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/network/ChatServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/network/ChatServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/yd/util/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/yd/util/DatabaseConnection.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,12 +51,14 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.ChatServer.executor": "Run",
+    "Application.Main.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/parkyoungdu/Desktop/instargram_javafx/src/main/resources/fxml",
+    "last_opened_file_path": "/Users/parkyoungdu/Desktop/instargram_javafx",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -64,6 +74,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/main/resources/fxml" />
       <recent name="$PROJECT_DIR$/src/main/java/com/yd" />
       <recent name="$PROJECT_DIR$/src/main/resources" />
@@ -117,7 +128,8 @@
       <workItem from="1732017331958" duration="1621000" />
       <workItem from="1732269288553" duration="1054000" />
       <workItem from="1732507852722" duration="4747000" />
-      <workItem from="1732625132084" duration="1004000" />
+      <workItem from="1732625132084" duration="1029000" />
+      <workItem from="1732875703194" duration="707000" />
     </task>
     <task id="LOCAL-00001" summary="mypage system update">
       <option name="closed" value="true" />
@@ -159,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732626118238</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Database update">
+      <option name="closed" value="true" />
+      <created>1732626152305</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1732626152305</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -171,6 +191,7 @@
     <MESSAGE value="." />
     <MESSAGE value="DatabaseConnection update" />
     <MESSAGE value="Network update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Network update" />
+    <MESSAGE value="Database update" />
+    <option name="LAST_COMMIT_MESSAGE" value="Database update" />
   </component>
 </project>
