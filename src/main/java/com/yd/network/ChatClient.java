@@ -8,7 +8,7 @@ import java.net.Socket;
 import javafx.application.Platform;
 
 public class ChatClient extends Thread {
-    private final String serverAddress = "localhost";
+    private final String serverAddress = "localhost"; // 서버 주소
     private final int serverPort = 12345;
     private String currentUserId;
     private MessageController messageController;
@@ -47,20 +47,21 @@ public class ChatClient extends Thread {
                         if (finalMessage.contains("is now online") || finalMessage.contains("is now offline")) {
                             mainController.updateUserStatus(finalMessage);
                         } else {
-                            // 메시지의 발신자를 확인하여 중복 알림 방지
-                            String[] messageParts = finalMessage.split(": ", 2);
-                            if (messageParts.length == 2) {
-                                String senderId = messageParts[0].trim();
-                                String messageContent = messageParts[1].trim();
+                            // 메시지 형식: messageId:senderId:messageText
+                            String[] messageParts = finalMessage.split(":", 3);
+                            if (messageParts.length == 3) {
+                                int messageId = Integer.parseInt(messageParts[0].trim());
+                                String senderId = messageParts[1].trim();
+                                String messageContent = messageParts[2].trim();
 
-                                // 자신이 보낸 메시지가 아닌 경우만 알림 카운트 업데이트 및 메시지 뷰에 추가
+                                // 자신이 보낸 메시지가 아닌 경우만 메시지 뷰에 추가
                                 if (!senderId.equals(currentUserId)) {
-                                    if (mainController != null) {
-                                        mainController.updateMessageNotification(); // 메시지 알림 개수 업데이트
-                                    }
                                     if (messageController != null) {
                                         messageController.addMessageToView(senderId + ": " + messageContent);
                                     }
+
+                                    // 메시지 읽음 처리
+                                    this.markMessageAsRead(messageId);
                                 }
                             }
                         }
@@ -79,8 +80,7 @@ public class ChatClient extends Thread {
         }
     }
 
-
-    // 리소스 정리 메서드 추가
+    // 리소스 정리 메서드
     private void cleanup() {
         try {
             if (in != null) {
@@ -98,21 +98,24 @@ public class ChatClient extends Thread {
         }
     }
 
+    // 메시지 전송 메서드
     public void sendMessage(String message) {
         if (out != null && !message.trim().isEmpty()) {
             // 메시지 전송 로그 추가
             System.out.println("Sending message from " + currentUserId + ": " + message);
-            out.println(currentUserId + ": " + message);
+            // 메시지 형식: receiverId:messageText
+            out.println(message);
         }
     }
 
+    // 팔로잉 상태 요청 메서드 (필요시 사용)
     public void requestFollowingStatus() {
         if (out != null) {
             out.println("REQUEST_STATUS");
         }
     }
 
-    // stopClient 메서드 추가
+    // 클라이언트 중지 메서드
     public void stopClient() {
         running = false; // 수신 루프 종료를 위한 플래그 설정
 
@@ -124,7 +127,7 @@ public class ChatClient extends Thread {
         System.out.println("Client " + currentUserId + " has been disconnected from the server.");
     }
 
-
+    // 메시지 읽음 상태로 업데이트 메서드
     public void markMessageAsRead(int messageId) {
         // 메시지를 읽음 처리하기 위해 서버에 요청을 보냄
         if (out != null) {

@@ -54,6 +54,22 @@ public class UserDAO {
         return null;
     }
 
+    public List<String> getAllUserIds() {
+        List<String> userIds = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT ID FROM USERS")) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String userId = rs.getString("ID");
+                userIds.add(userId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userIds;
+    }
+
     // ID로 사용자 정보 조회
     public User getUserById(String id) {
         String sql = "SELECT * FROM USERS WHERE ID = ?";

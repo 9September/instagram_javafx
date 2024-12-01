@@ -819,17 +819,8 @@ public class MainController {
             // 팔로잉 목록에서 해당 사용자의 상태를 업데이트
             for (User user : followingListView.getItems()) {
                 if (user.getId().equals(userId)) {
-                    // UI 업데이트
-                    Platform.runLater(() -> {
-                        for (int i = 0; i < followingListView.getItems().size(); i++) {
-                            User currentUser = followingListView.getItems().get(i);
-                            if (currentUser.getId().equals(userId)) {
-                                currentUser.setOnline(isOnline);
-                                followingListView.refresh();
-                                break;
-                            }
-                        }
-                    });
+                    user.setOnline(isOnline);
+                    followingListView.refresh();
                     break;
                 }
             }

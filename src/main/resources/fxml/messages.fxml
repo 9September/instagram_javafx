@@ -4,25 +4,29 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.yd.controller.MessageController" spacing="10" alignment="CENTER">
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10" />
-    </padding>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.yd.controller.MessageController">
+    <left>
+        <VBox spacing="10" prefWidth="200">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
+            </padding>
+            <Label text="Users" style="-fx-font-size: 16px;" />
+            <ListView fx:id="userListView" prefHeight="400" onMouseClicked="#handleUserSelection" />
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
+            </padding>
+            <Label text="Messages" style="-fx-font-size: 16px;" />
+            <ListView fx:id="messageListView" prefHeight="350" />
+            <HBox spacing="10">
 
-    <!-- 팔로잉 목록 -->
-    <VBox spacing="10" prefWidth="200">
-        <Label text="Following" style="-fx-font-size: 16px;" />
-        <ListView fx:id="followingListView" prefHeight="300" onMouseClicked="#handleUserSelection" />
-    </VBox>
-
-    <!-- 메시지 창 -->
-    <VBox spacing="10" alignment="CENTER" prefWidth="400">
-        <Label text="Messages" style="-fx-font-size: 16px;" />
-        <ListView fx:id="messageListView" prefHeight="300" />
-        <HBox spacing="10">
-            <TextField fx:id="messageInputField" promptText="Type a message..." />
-            <Button text="Send" onAction="#handleSendMessage" />
-        </HBox>
-    </VBox>
-</HBox>
+                <TextField fx:id="messageInputField" promptText="Type a message..." HBox.hgrow="ALWAYS" />
+                <Button text="Send" onAction="#handleSendMessage" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

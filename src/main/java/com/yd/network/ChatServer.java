@@ -12,6 +12,7 @@ import java.util.concurrent.*;
 public class ChatServer {
     private static Map<String, ClientHandler> clientHandlers = new ConcurrentHashMap<>();
     private static MessageDAO messageDAO = new MessageDAO();
+    private static UserDAO userDAO = new UserDAO();
 
     public static void main(String[] args) {
         System.out.println("Chat server started...");
@@ -58,8 +59,10 @@ public class ChatServer {
                     clientHandlers.put(clientId, this);
                 }
                 System.out.println(clientId + " connected.");
-                new UserDAO().setUserOnlineStatus(clientId, true);
+                userDAO.setUserOnlineStatus(clientId, true);
                 broadcastUserStatus(clientId, true);
+
+                sendPendingMessages();
 
                 String message;
                 while ((message = in.readLine()) != null) {
@@ -68,15 +71,18 @@ public class ChatServer {
                         String targetClient = parts[0];
                         String messageText = parts[1];
                         handleMessage(clientId, targetClient, messageText);
+                    } else if (message.startsWith("READ_MESSAGE:")) {
+                        String messageIdStr = message.substring("READ_MESSAGE:".length());
+                        handleReadMessage(messageIdStr);
                     }
                 }
             } catch (IOException e) {
-                System.out.println(clientId + " disconnected.");
+                System.out.println(clientId + " disconnected unexpectedly.");
             } finally {
                 synchronized (clientHandlers) {
                     clientHandlers.remove(clientId);
                 }
-                new UserDAO().setUserOnlineStatus(clientId, false);  // 연결 종료 시 사용자 상태를 오프라인으로 업데이트
+                userDAO.setUserOnlineStatus(clientId, false);  // 연결 종료 시 사용자 상태를 오프라인으로 업데이트
                 broadcastUserStatus(clientId, false);
                 System.out.println(clientId + " disconnected and set to offline.");
             }
@@ -89,8 +95,8 @@ public class ChatServer {
             // 수신자가 온라인인지 확인
             ClientHandler receiverHandler = clientHandlers.get(receiverId);
             if (receiverHandler != null) {
-                // 수신자에게만 메시지 전송 (송신자에게는 전송하지 않음)
-                receiverHandler.sendMessage(senderId + ": " + messageText);
+                // 메시지 형식: messageId:senderId:messageText
+                receiverHandler.sendMessage(message.getMessageId() + ":" + senderId + ": " + messageText);
             } else {
                 // 수신자가 오프라인일 경우 로그 출력
                 System.out.println("Receiver not online or handler not found: " + receiverId);
@@ -98,16 +104,27 @@ public class ChatServer {
         }
 
 
+        private void sendPendingMessages() {
+            List<Message> pendingMessages = messageDAO.getUnreadMessages(clientId);
+            for (Message msg : pendingMessages) {
+                sendMessage(msg.getSenderId() + ": " + msg.getMessageText());
+                messageDAO.markMessageAsRead(msg.getMessageId());
+            }
+        }
+
+        private void handleReadMessage(String messageId) {
+            try {
+                int id = Integer.parseInt(messageId);
+                messageDAO.updateMessageStatusToRead(id);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid message ID format: " + messageId);
+            }
+        }
+
         public void sendMessage(String message) {
             if (out != null) {
                 out.println(message);
             }
         }
     }
-    private void handleReadMessage(String messageId) {
-        int id = Integer.parseInt(messageId);
-        messageDAO.updateMessageStatusToRead(id);
-    }
-
-
 }
