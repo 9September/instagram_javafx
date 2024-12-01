@@ -92,7 +92,7 @@ public class MainController {
     private byte[] attachedImageBytes = null;
     private PostDAO postDAO = new PostDAO();
     private FollowDAO followDAO = new FollowDAO();
-    private UserDAO userDAO = new UserDAO();
+    private UserDAO userDAO = new UserDAO(); // 클래스 레벨에서 생성
 
     @FXML
     private BorderPane mainBorderPane;
@@ -214,7 +214,7 @@ public class MainController {
     private void handleWindowClose() {
         if (currentUser != null) {
             // 사용자를 오프라인 상태로 설정
-            new UserDAO().setUserOnlineStatus(currentUser.getId(), false);
+            userDAO.setUserOnlineStatus(currentUser.getId(), false);
             System.out.println("User " + currentUser.getId() + " is now set to offline.");
 
             // ChatClient 연결 해제 및 리소스 정리
@@ -314,7 +314,6 @@ public class MainController {
                 postProfileImageView.setFitHeight(40);
                 postProfileImageView.setPreserveRatio(true);
                 postProfileImageView.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
-
 
                 // 사용자 아이디 레이블 설정
                 userIdLabel.setStyle("-fx-font-weight: bold;");
@@ -469,8 +468,6 @@ public class MainController {
     private void loadFollowingList() {
         List<User> followingUsers = followDAO.getFollowingUsers(currentUser.getId());
 
-        // 온라인 상태 업데이트
-        UserDAO userDAO = new UserDAO();  // 객체를 한 번만 생성해서 사용
         for (User user : followingUsers) {
             boolean isOnline = userDAO.isUserOnline(user.getId());
             user.setOnline(isOnline);
@@ -541,12 +538,6 @@ public class MainController {
             }
         });
     }
-
-
-
-
-
-
 
     private void setupRecommendListView() {
         recommendListView.setCellFactory(param -> new ListCell<>() {
@@ -642,6 +633,7 @@ public class MainController {
             }
         }
     }
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
         alert.setTitle(title);
@@ -826,6 +818,7 @@ public class MainController {
             }
         }
     }
+
     @FXML
     public void handleExit() {
         if (chatClient != null && chatClient.isAlive()) {
@@ -834,6 +827,7 @@ public class MainController {
         Platform.exit();
         System.exit(0);
     }
+
     public void displayConnectionError(String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -843,6 +837,7 @@ public class MainController {
             alert.showAndWait();
         });
     }
+
     public void updateFollowingStatus(String userId, boolean isOnline) {
         Platform.runLater(() -> {
             for (User user : followingListView.getItems()) {
@@ -854,6 +849,7 @@ public class MainController {
             }
         });
     }
+
     public MessageController getMessageController() {
         return this.messageController; // 메세지 컨트롤러가 초기화 되어있다면 반환
     }
@@ -861,7 +857,7 @@ public class MainController {
     @FXML
     private void handleLogout(ActionEvent event) {
         // 현재 사용자의 온라인 상태를 오프라인으로 변경
-        new UserDAO().setUserOnlineStatus(currentUser.getId(), false);
+        userDAO.setUserOnlineStatus(currentUser.getId(), false);
         System.out.println("User " + currentUser.getId() + " has logged out.");
 
         // 채팅 클라이언트 종료 및 연결 해제 (리소스 정리)
@@ -885,8 +881,5 @@ public class MainController {
             e.printStackTrace();
         }
     }
-
-
-
 
 }

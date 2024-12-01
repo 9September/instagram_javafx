@@ -56,10 +56,11 @@ public class UserDAO {
 
     public List<String> getAllUserIds() {
         List<String> userIds = new ArrayList<>();
+        String sql = "SELECT ID FROM USERS";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT ID FROM USERS")) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 String userId = rs.getString("ID");
                 userIds.add(userId);
@@ -166,17 +167,21 @@ public class UserDAO {
 
     public byte[] getUserProfileImage(String userId) {
         String sql = "SELECT profile_image FROM USERS WHERE ID = ?";
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getBytes("profile_image");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBytes("profile_image");
+                } else {
+                    System.out.println("No profile image found for userId: " + userId);
+                    return null;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public int getFollowerCount(String userId) {
@@ -216,7 +221,6 @@ public class UserDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             String wildcardQuery = "%" + query + "%";
             stmt.setString(1, wildcardQuery);
-            stmt.setString(2, wildcardQuery);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 User user = new User();
