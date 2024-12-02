@@ -87,7 +87,7 @@ public class MessageDAO {
                         rs.getString("RECEIVER_ID"),
                         rs.getString("MESSAGE_TEXT")
                 );
-                message.setMessageId(rs.getInt("MESSAGE_ID"));
+                message.setMessageId(rs.getInt("ID"));
                 message.setTimestamp(rs.getTimestamp("TIMESTAMP").toLocalDateTime());
                 unreadMessages.add(message);
             }
@@ -111,7 +111,7 @@ public class MessageDAO {
 
     // 메시지 읽음 상태를 업데이트하는 추가 메서드 (필요시 사용)
     public void updateMessageStatusToRead(int messageId) {
-        String query = "UPDATE MESSAGES SET IS_READ = 1 WHERE MESSAGE_ID = ?";
+        String query = "UPDATE MESSAGES SET IS_READ = 1 WHERE ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, messageId);
