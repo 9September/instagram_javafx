@@ -5,6 +5,9 @@ import com.yd.controller.MainController;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
+
+import com.yd.model.Group;
 import javafx.application.Platform;
 
 public class ChatClient extends Thread {
@@ -43,11 +46,23 @@ public class ChatClient extends Thread {
 
                 Platform.runLater(() -> {
                     try {
-                        // 상태 변경 메시지 처리
-                        if (finalMessage.contains("is now online") || finalMessage.contains("is now offline")) {
+                        if (finalMessage.startsWith("GROUP_CREATED:")) {
+                            int groupId = Integer.parseInt(finalMessage.substring("GROUP_CREATED:".length()));
+                            messageController.notifyGroupCreated(groupId);
+                        } else if (finalMessage.startsWith("GROUP:")) {
+                            // 그룹 메시지 형식: GROUP:groupId:senderId:messageText
+                            String[] parts = finalMessage.split(":", 4);
+                            if (parts.length == 4) {
+                                int groupId = Integer.parseInt(parts[1]);
+                                String senderId = parts[2];
+                                String messageText = parts[3];
+                                String displayMessage = senderId + " [그룹 " + groupId + "]: " + messageText;
+                                messageController.addMessageToView(displayMessage);
+                            }
+                        } else if (finalMessage.contains("is now online") || finalMessage.contains("is now offline")) {
                             mainController.updateUserStatus(finalMessage);
                         } else {
-                            // 메시지 형식: messageId:senderId:messageText
+                            // 개인 메시지 형식: messageId:senderId:messageText
                             String[] messageParts = finalMessage.split(":", 3);
                             if (messageParts.length == 3) {
                                 int messageId = Integer.parseInt(messageParts[0].trim());
@@ -103,8 +118,38 @@ public class ChatClient extends Thread {
         if (out != null && !message.trim().isEmpty()) {
             // 메시지 전송 로그 추가
             System.out.println("Sending message from " + currentUserId + ": " + message);
-            // 메시지 형식: receiverId:messageText
+            // 개인 메시지 형식: receiverId:messageText
+            // 그룹 메시지: GROUP_MESSAGE:groupId:messageText
             out.println(message);
+        }
+    }
+
+    // 그룹 메시지 전송 메서드 추가
+    public void sendGroupMessage(int groupId, String messageText) {
+        if (out != null && !messageText.trim().isEmpty()) {
+            String formattedMessage = "GROUP_MESSAGE:" + groupId + ":" + messageText;
+            sendMessage(formattedMessage);
+        }
+    }
+
+    public void sendGroupCreation(Group group) {
+        // 서버에 그룹 생성 요청 전송
+        String message = "CREATE_GROUP:" + group.getGroupName() + "," +
+                String.join(",", group.getMemberIds());
+        sendMessage(message);
+    }
+
+    // 그룹 생성 메서드 추가
+    public void createGroup(String groupName, List<String> memberIds) {
+        if (out != null && groupName != null && !groupName.trim().isEmpty()) {
+            // 그룹 생성 데이터 형식: groupName,user1,user2,user3,...
+            StringBuilder groupData = new StringBuilder();
+            groupData.append(groupName);
+            for (String userId : memberIds) {
+                groupData.append(",").append(userId);
+            }
+            String formattedMessage = "CREATE_GROUP:" + groupData.toString();
+            sendMessage(formattedMessage);
         }
     }
 

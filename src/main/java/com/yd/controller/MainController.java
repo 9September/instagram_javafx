@@ -1,9 +1,6 @@
 package com.yd.controller;
 
-import com.yd.dao.FollowDAO;
-import com.yd.dao.PostDAO;
-import com.yd.dao.UserDAO;
-import com.yd.dao.MessageDAO;
+import com.yd.dao.*;
 import com.yd.network.ChatClient;
 import com.yd.network.ChatServer;
 import com.yd.model.Post;
@@ -93,6 +90,7 @@ public class MainController {
     private PostDAO postDAO = new PostDAO();
     private FollowDAO followDAO = new FollowDAO();
     private UserDAO userDAO = new UserDAO(); // 클래스 레벨에서 생성
+    private GroupDAO groupDAO = new GroupDAO();
 
     @FXML
     private BorderPane mainBorderPane;
@@ -771,11 +769,13 @@ public class MainController {
 
     public void updateMessageNotification() {
         int unreadMessagesCount = messageDAO.getUnreadMessagesCount(currentUser.getId());
+        int totalUnread = unreadMessagesCount;
+
         Platform.runLater(() -> {
             Button messagesButton = (Button) mainBorderPane.lookup("#messagesButton");
             if (messagesButton != null) {
-                if (unreadMessagesCount > 0) {
-                    messagesButton.setText("Messages (" + unreadMessagesCount + ")");
+                if (totalUnread > 0) {
+                    messagesButton.setText("Messages (" + totalUnread + ")");
                 } else {
                     messagesButton.setText("Messages");
                 }
@@ -799,7 +799,6 @@ public class MainController {
 
 
     public void updateUserStatus(String statusMessage) {
-        // 예: "sbma0122 is now online" 이런 메시지로부터 사용자 ID와 상태 추출
         String[] parts = statusMessage.split(" ", 3);
         if (parts.length == 3) {
             String userId = parts[0];

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.layout.StackPane?>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.yd.controller.MessageController">
     <left>
         <VBox spacing="10" prefWidth="200">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
             </padding>
-            <Label text="Users" style="-fx-font-size: 16px;" />
-            <ListView fx:id="userListView" prefHeight="400" onMouseClicked="#handleUserSelection" />
+            <HBox>
+                <Button text="개인 대화" fx:id="privateChatButton" onAction="#handlePrivateChat" />
+                <Button text="그룹 대화" fx:id="groupChatButton" onAction="#handleGroupChat" />
+            </HBox>
+            <StackPane>
+                <ListView fx:id="userListView" prefWidth="180" prefHeight="565"/>
+                <ListView fx:id="groupListView" prefWidth="180" prefHeight="565" visible="false" />
+            </StackPane>
+            <Button text="그룹 만들기" onAction="#handleCreateGroup" />
         </VBox>
     </left>
     <center>
@@ -20,12 +33,10 @@
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/> <!-- 안쪽 여백 설정 -->
             </padding>
-            <Label text="Messages" style="-fx-font-size: 16px;" />
-            <ListView fx:id="messageListView" prefHeight="350" />
+            <ListView fx:id="messageListView" prefHeight="600" />
             <HBox spacing="10">
-
-                <TextField fx:id="messageInputField" promptText="Type a message..." HBox.hgrow="ALWAYS" />
-                <Button text="Send" onAction="#handleSendMessage" />
+                <TextField fx:id="messageInputField" HBox.hgrow="ALWAYS" />
+                <Button text="전송" onAction="#handleSendMessage" />
             </HBox>
         </VBox>
     </center>

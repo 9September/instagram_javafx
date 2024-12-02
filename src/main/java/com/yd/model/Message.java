@@ -8,11 +8,20 @@ public class Message {
     private String receiverId;
     private String messageText;
     private LocalDateTime timestamp;
+    private Integer groupId;
 
     // Constructors
     public Message(String senderId, String receiverId, String messageText) {
         this.senderId = senderId;
         this.receiverId = receiverId;
+        this.messageText = messageText;
+        this.timestamp = LocalDateTime.now();
+        this.groupId = null;
+    }
+
+    public Message(String senderId, int groupId, String messageText) {
+        this.senderId = senderId;
+        this.groupId = groupId;
         this.messageText = messageText;
         this.timestamp = LocalDateTime.now();
     }
@@ -46,8 +55,20 @@ public class Message {
         this.timestamp = timestamp;
     }
 
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
+    }
+
     @Override
     public String toString() {
-        return senderId + ": " + messageText + " (" + timestamp + ")";
+        if (groupId != null) {
+            return senderId + " [그룹 " + groupId + "]: " + messageText + " (" + timestamp + ")";
+        } else {
+            return senderId + ": " + messageText + " (" + timestamp + ")";
+        }
     }
 }

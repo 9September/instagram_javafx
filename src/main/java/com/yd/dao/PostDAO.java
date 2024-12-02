@@ -136,6 +136,8 @@ public class PostDAO {
     public List<Post> getAllPosts(int offset, int limit) {
         List<Post> posts = new ArrayList<>();
         String sql = "SELECT * FROM POSTS ORDER BY CREATED_AT DESC LIMIT ? OFFSET ?";
+
+        //
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
