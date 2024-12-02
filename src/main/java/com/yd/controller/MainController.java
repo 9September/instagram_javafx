@@ -192,9 +192,6 @@ public class MainController {
             Image profileImage = getImageFromBytes(currentUser.getProfileImage());
             profileImageView.setImage(profileImage);
 
-            // ChatClient 초기화 (채팅 클라이언트 시작)
-            chatClient = new ChatClient(currentUser.getId(), messageController, this);
-            chatClient.start();
 
             // 다른 초기화 작업 수행
             loadFollowingList();
